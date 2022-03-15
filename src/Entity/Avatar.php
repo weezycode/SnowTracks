@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\ImageRepository;
+use App\Repository\AvatarRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ImageRepository::class)]
-class Image
+#[ORM\Entity(repositoryClass: AvatarRepository::class)]
+class Avatar
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -14,9 +14,9 @@ class Image
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    private $idTrick;
+    private $idUser;
 
-    #[ORM\Column(type: 'string', length: 100)]
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
     public function getId(): ?int
@@ -24,14 +24,14 @@ class Image
         return $this->id;
     }
 
-    public function getIdTrick(): ?int
+    public function getIdUser(): ?int
     {
-        return $this->idTrick;
+        return $this->idUser;
     }
 
-    public function setIdTrick(int $idTrick): self
+    public function setIdUser(int $idUser): self
     {
-        $this->idTrick = $idTrick;
+        $this->idUser = $idUser;
 
         return $this;
     }

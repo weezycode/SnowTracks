@@ -2,27 +2,27 @@
 
 namespace App\Entity;
 
-use App\Repository\FigureRepository;
+use App\Repository\StrickRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FigureRepository::class)]
-class Figure
+#[ORM\Entity(repositoryClass: StrickRepository::class)]
+class Strick
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 100)]
     private $name;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $description;
+    #[ORM\Column(type: 'text')]
+    private $content;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private $dateAt;
 
-    #[ORM\Column(type: 'datetime')]
+    #[ORM\Column(type: 'datetime_immutable')]
     private $dateUp;
 
     public function getId(): ?int
@@ -42,14 +42,14 @@ class Figure
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getContent(): ?string
     {
-        return $this->description;
+        return $this->content;
     }
 
-    public function setDescription(string $description): self
+    public function setContent(string $content): self
     {
-        $this->description = $description;
+        $this->content = $content;
 
         return $this;
     }
@@ -66,12 +66,12 @@ class Figure
         return $this;
     }
 
-    public function getDateUp(): ?\DateTimeInterface
+    public function getDateUp(): ?\DateTimeImmutable
     {
         return $this->dateUp;
     }
 
-    public function setDateUp(\DateTimeInterface $dateUp): self
+    public function setDateUp(\DateTimeImmutable $dateUp): self
     {
         $this->dateUp = $dateUp;
 

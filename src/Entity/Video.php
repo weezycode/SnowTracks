@@ -13,40 +13,28 @@ class Video
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $Trick;
+    #[ORM\Column(type: 'integer')]
+    private $idTrick;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $url;
-
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 100)]
     private $name;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $type;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTrick(): ?string
+    public function getIdTrick(): ?int
     {
-        return $this->Trick;
+        return $this->idTrick;
     }
 
-    public function setTrick(string $Trick): self
+    public function setIdTrick(int $idTrick): self
     {
-        $this->Trick = $Trick;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
+        $this->idTrick = $idTrick;
 
         return $this;
     }
@@ -59,6 +47,18 @@ class Video
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(string $type): self
+    {
+        $this->type = $type;
 
         return $this;
     }

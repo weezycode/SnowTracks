@@ -13,57 +13,18 @@ class Comment
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    private $content;
-
-    #[ORM\Column(type: 'datetime')]
-    private $dateCreated;
-
-    #[ORM\Column(type: 'integer')]
-    private $idFigure;
-
     #[ORM\Column(type: 'integer')]
     private $idUser;
+
+    #[ORM\Column(type: 'integer')]
+    private $idTrick;
+
+    #[ORM\Column(type: 'datetime_immutable')]
+    private $dateAt;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
-    public function getDateCreated(): ?\DateTimeInterface
-    {
-        return $this->dateCreated;
-    }
-
-    public function setDateCreated(\DateTimeInterface $dateCreated): self
-    {
-        $this->dateCreated = $dateCreated;
-
-        return $this;
-    }
-
-    public function getIdFigure(): ?int
-    {
-        return $this->idFigure;
-    }
-
-    public function setIdFigure(int $idFigure): self
-    {
-        $this->idFigure = $idFigure;
-
-        return $this;
     }
 
     public function getIdUser(): ?int
@@ -74,6 +35,30 @@ class Comment
     public function setIdUser(int $idUser): self
     {
         $this->idUser = $idUser;
+
+        return $this;
+    }
+
+    public function getIdTrick(): ?int
+    {
+        return $this->idTrick;
+    }
+
+    public function setIdTrick(int $idTrick): self
+    {
+        $this->idTrick = $idTrick;
+
+        return $this;
+    }
+
+    public function getDateAt(): ?\DateTimeImmutable
+    {
+        return $this->dateAt;
+    }
+
+    public function setDateAt(\DateTimeImmutable $dateAt): self
+    {
+        $this->dateAt = $dateAt;
 
         return $this;
     }
