@@ -11,6 +11,7 @@ import './styles/style.css';
 
 // start the Stimulus application
 import './bootstrap';
+import $ from 'jquery';
 
 document.addEventListener("DOMContentLoaded", function (event) {
 
@@ -29,7 +30,46 @@ document.addEventListener("DOMContentLoaded", function (event) {
     }
 
 
-
 });
-console.log('houlalala');
+
+
+
+document
+    .querySelectorAll('.add_item_link')
+    .forEach(btn => {
+        btn.addEventListener("click", addFormToCollection)
+    });
+
+const addTagLink = document.createElement('a')
+addTagLink.classList.add('add_item_link')
+addTagLink.type = 'button '
+addTagLink.innerText = 'Ajout de video'
+addTagLink.dataset.collectionHolderClass = 'video'
+
+const newLinkLi = document.createElement('li').append(addTagLink)
+
+const collectionHolder = document.querySelector('ul.video')
+collectionHolder.appendChild(addTagLink)
+
+const addFormToCollection = (e) => {
+    const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+
+    const item = document.createElement('li');
+
+    item.innerHTML = collectionHolder
+        .dataset
+        .prototype
+        .replace(
+            /__name__/g,
+            collectionHolder.dataset.index
+        );
+
+    collectionHolder.appendChild(item);
+
+    collectionHolder.dataset.index++;
+}
+
+addTagLink.addEventListener("click", addFormToCollection)
+
+console.log('Veuillez faire attention')
 

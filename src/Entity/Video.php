@@ -13,52 +13,41 @@ class Video
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    private $idTrick;
-
-    #[ORM\Column(type: 'string', length: 100)]
-    private $name;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $type;
+
+    private $url;
+
+    #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'videos')]
+    private $trick;
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdTrick(): ?int
+
+    public function getUrl(): ?string
     {
-        return $this->idTrick;
+        return $this->url;
     }
 
-    public function setIdTrick(int $idTrick): self
+    public function setUrl(string $url): self
     {
-        $this->idTrick = $idTrick;
+        $this->url = $url;
 
         return $this;
     }
 
-    public function getName(): ?string
+    public function getTrick(): ?Trick
     {
-        return $this->name;
+        return $this->trick;
     }
 
-    public function setName(string $name): self
+    public function setTrick(?Trick $trick): self
     {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
+        $this->trick = $trick;
 
         return $this;
     }
