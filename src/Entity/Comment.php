@@ -13,52 +13,74 @@ class Comment
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    private $idUser;
-
-    #[ORM\Column(type: 'integer')]
-    private $idTrick;
-
     #[ORM\Column(type: 'datetime_immutable')]
-    private $dateAt;
+    private $createdAt;
+
+    #[ORM\Column(type: 'text')]
+    private $content;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $user;
+
+    #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'comments')]
+    #[ORM\JoinColumn(nullable: false)]
+    private $trick;
+
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getIdUser(): ?int
+
+
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->idUser;
+        return $this->createdAt;
     }
 
-    public function setIdUser(int $idUser): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->idUser = $idUser;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getIdTrick(): ?int
+    public function getContent(): ?string
     {
-        return $this->idTrick;
+        return $this->content;
     }
 
-    public function setIdTrick(int $idTrick): self
+    public function setContent(string $content): self
     {
-        $this->idTrick = $idTrick;
+        $this->content = $content;
 
         return $this;
     }
 
-    public function getDateAt(): ?\DateTimeImmutable
+
+
+    public function getUser(): ?User
     {
-        return $this->dateAt;
+        return $this->user;
     }
 
-    public function setDateAt(\DateTimeImmutable $dateAt): self
+    public function setUser(?User $user): self
     {
-        $this->dateAt = $dateAt;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getTrick(): ?Trick
+    {
+        return $this->trick;
+    }
+
+    public function setTrick(?Trick $trick): self
+    {
+        $this->trick = $trick;
 
         return $this;
     }

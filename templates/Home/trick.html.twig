@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+{# list #}
+<div class="wrapper" id="tricks">
+    <h2 class="post text-center ">Tricks!</h2>
+    <div class="container">
+        <div class="row g-1">
+            {% for trick in tricks %}
+
+            <div class="col-md-3">
+
+                <div class="card p-3">
+                    {% for tricks in trick.image %}
+
+                    <div class="text-center">
+                        {% if tricks.main == 1 %}
+                        <a href="{{ path('trick', {'slug': trick.slug })}} "> <img class="card-img-top"
+                                style="height :250px;" src=" {{ asset('images/uploadFigure/' ~ tricks.filename) }}"
+                                width="200"> {% endif %}
+
+                    </div>{% endfor %}
+                    <div class="product-details"><span>{{ trick.name }}</span></a>
+
+                        <div class="btn-toolbar justify-content-center " role="toolbar"
+                            aria-label="Toolbar with button groups">
+                            <div class="btn-group mr-2" role="group" aria-label="First group">
+                                <a href="#"><button type="button" class="btn ">
+                                        <i class="bi bi-pencil-square icon"></i></button></a>
+                            </div>
+                            <div class="btn-group mr-2" role="group" aria-label="Second group">
+                                <a href="#"> <button type="button" class="btn ">
+                                        <i class="bi bi-trash icon"></i></button></a>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

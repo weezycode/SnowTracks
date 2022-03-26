@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\GroupeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: GroupeRepository::class)]
@@ -13,27 +15,24 @@ class Groupe
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    private $idTrick;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(type: 'string', length: 255, unique: true)]
     private $name;
+
+    #[ORM\OneToMany(mappedBy: 'groupe', targetEntity: Trick::class)]
+    private $trick;
+
+
+
+    public function __construct()
+    {
+        $this->stricks = new ArrayCollection();
+        $this->trick = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdTrick(): ?int
-    {
-        return $this->idTrick;
-    }
-
-    public function setIdTrick(int $idTrick): self
-    {
-        $this->idTrick = $idTrick;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -44,6 +43,36 @@ class Groupe
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Trick>
+     */
+    public function getTrick(): Collection
+    {
+        return $this->trick;
+    }
+
+    public function addTrick(Trick $trick): self
+    {
+        if (!$this->trick->contains($trick)) {
+            $this->trick[] = $trick;
+            $trick->setGroupe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTrick(Trick $trick): self
+    {
+        if ($this->trick->removeElement($trick)) {
+            // set the owning side to null (unless already changed)
+            if ($trick->getGroupe() === $this) {
+                $trick->setGroupe(null);
+            }
+        }
 
         return $this;
     }
