@@ -2,32 +2,84 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+/**
+ * @UniqueEntity(fields="email",  message="L'adresse email '{{ value }}' existe déja !")
+ * @UniqueEntity(fields="pseudo",  message="Le pseudo '{{ value }}' existe déjà !")
+ */
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    /**
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Length(min="5", max="50",minMessage="Le pseudo doit faire au minimum 5 caractères",maxMessage="Le pseudo ne doit pas faire plus de 50 caractères")
+     * @Assert\Regex(
+     *     pattern="/^[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑña-zA-Z0-9_]{0,10}$/",
+     *     match=true,
+     *     message="Ce pseudo n\est pas valide"
+     * )
+     */
+
+    #[ORM\Column(type: 'string', length: 50, unique: true)]
+    private $pseudo;
+
+
+    /**
+     * @Assert\Email(
+     *     message = "L\'adresse email '{{ value }}' n\'est pas valide."
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[a-zA-Z-0-9_.-]+@[a-zA-Z-]+\.[a-zA-Z-.]+$/",
+     * 
+     *     match=true,
+     *     message=" Votre email n'est pas valide "
+     * )
+     * @Assert\NotBlank()
+     */
     #[ORM\Column(type: 'string', length: 180, unique: true)]
     private $email;
 
     #[ORM\Column(type: 'json')]
     private $roles = [];
 
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{6,}$/",
+     *     message="Votre mot de passe doit contenir au moins une lettre miniscule, une majucsule, un chiffre et un caractère espécial"
+     * )
+     * @Assert\Length(min="5", max="20",minMessage= "Votre mot de passe doit avoir au moins 6 caractères", maxMessage= "Votre mot de passe ne doit avoir au plus de 20 caractères")
+     * 
+     * @Assert\EqualTo(propertyPath ="password_confirmed", message="Votre mot de passe doit être identique")
+     */
+
     #[ORM\Column(type: 'string')]
     private $password;
+    /**
+     *@Assert\EqualTo(propertyPath ="password", message="Votre mot de passe doit être identique")
+     */
 
-    #[ORM\Column(type: 'string', length: 100, unique: true)]
-    private $pseudo;
+    public $password_confirmed;
+
+
 
     #[ORM\Column(type: 'string', length: 255)]
     private $avatar;
@@ -52,7 +104,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->comments = new ArrayCollection();
         $this->tricks = new ArrayCollection();
     }
-
     public function getId(): ?int
     {
         return $this->id;

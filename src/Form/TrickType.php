@@ -31,10 +31,10 @@ class TrickType extends AbstractType
             ])
 
             ->add('image', FileType::class, [
-                'required' => true,
+                'required' => false,
                 'label' => false,
                 'mapped' => false,
-                'multiple' => true
+                'multiple' => true,
             ])
 
             ->add('videos', CollectionType::class, [

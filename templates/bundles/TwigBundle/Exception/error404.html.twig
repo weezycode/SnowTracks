@@ -12,7 +12,9 @@
 				<h2>
 					404 Not found</h2>
 				<div class="error-details">
-					Sorry, the page required not found !?
+					L'url
+					{{ app.request.uri }} que vous recherchez n'existe pas !
+
 				</div>
 				<div class="error-actions">
 					<a href="{{ path('show_tricks') }}" class="btn btn-primary btn-lg"><span

@@ -6,8 +6,15 @@ use App\Repository\TrickRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: TrickRepository::class)]
+
+/**
+ *@UniqueEntity(fields="name",  message="Ce nom de trick '{{ value }}' existe déja, Veuillez changer le nom du trick !")
+ */
+
 class Trick
 {
     #[ORM\Id]
@@ -15,33 +22,53 @@ class Trick
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'string', length: 100, unique: true)]
+    /**
+     * @Assert\Length(min="5", max="50",minMessage="Le nom doit faire au minimum 5 caractères",maxMessage="Le nom ne doit pas faire plus de 50 caractères")
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Regex(
+     *     pattern="/[a-zA-Z._\p{L}-]{1,20}/",
+     *     message="Not valid name: Veuillez juste mettre des lettres"
+     * )
+     */
+
+    #[ORM\Column(type: 'string', length: 50, unique: true)]
     private $name;
+
+    /**
+     * @Assert\Length(min="5",minMessage="Le nom doit faire au minimum 5 caractères")
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Regex(
+     *     pattern="/[a-zA-Z0-9._\p{L}-]{1,20}/",
+     *     message="Vérifier votre contenu"
+     * )
+     */
 
     #[ORM\Column(type: 'text')]
     private $content;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $createdAt;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tricks')]
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Video::class, orphanRemoval: true,)]
+    #[ORM\OneToMany(mappedBy: "trick", targetEntity: Video::class, cascade: ["persist", "remove"])]
     private $videos;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Image::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: "trick", targetEntity: Image::class,  cascade: ["persist", "remove"])]
     private ?Collection $image;
 
     #[ORM\ManyToOne(targetEntity: Groupe::class, inversedBy: 'trick')]
     #[ORM\JoinColumn(nullable: false)]
     private $groupe;
 
-    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Comment::class)]
+    #[ORM\OneToMany(mappedBy: 'trick', targetEntity: Comment::class, cascade: ["persist", "remove"])]
     private $comments;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
@@ -234,10 +261,5 @@ class Trick
         $this->slug = $slug;
 
         return $this;
-    }
-
-    public function __toString()
-    {
-        return $this->image;
     }
 }

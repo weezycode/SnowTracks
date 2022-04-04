@@ -12,7 +12,8 @@
 				<h2>
 					500 Error</h2>
 				<div class="error-details">
-					The server encountered a situation that it does not know how to handle.
+					{{exception.message}}
+					{{ app.request.requesturi }}
 				</div>
 				<div class="error-actions">
 					<a href="{{ path('show_tricks') }}" class="btn btn-primary btn-lg"><span
