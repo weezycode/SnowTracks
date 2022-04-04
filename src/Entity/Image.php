@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use App\Entity\Trait\Slug;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ImageRepository;
 
@@ -15,6 +15,10 @@ class Image
     #[ORM\Column(type: 'integer')]
     private $id;
 
+    /**
+     * @Assert\NotBlank()
+     * @Assert\File(mimeTypes={ "image/jpeg" , "image/png" })
+     */
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private $filename;
 

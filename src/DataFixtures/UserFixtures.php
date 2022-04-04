@@ -95,21 +95,21 @@ class UserFixtures extends Fixture
     {
 
         $names = [
-            'Mariame',
-            'Awa',
-            'Amélie',
-            'Juan',
-            'Luis',
-            'Pedro',
-            'Michel',
-            'Paul',
-            'Sophie',
-            'Sirra',
-            'Isabelle',
-            'Pauline',
-            'Moise',
-            'Kader',
-            'Diawara',
+            ['name' => 'Mariame', 'user' => 'user1'],
+            ['name' => 'Awa', 'user' => 'user2'],
+            ['name' => 'Amélie', 'user' => 'user3'],
+            ['name' => 'Juan', 'user' => 'user4'],
+            ['name' => 'Luis', 'user' => 'user5'],
+            ['name' => 'Pedro', 'user' => 'user6'],
+            ['name' => 'Michel', 'user' => 'user7'],
+            ['name' => 'Paul', 'user' => 'user8'],
+            ['name' => 'Sophie', 'user' => 'user9'],
+            ['name' => 'Sirra', 'user' => 'user10'],
+            ['name' => 'Isabelle', 'user' => 'user11'],
+            ['name' => 'Pauline', 'user' => 'user12'],
+            ['name' => 'Moise', 'user' => 'user13'],
+            ['name' => 'Kader', 'user' => 'user14'],
+            ['name' => 'Diawara', 'user' => 'user15'],
 
 
             // and so on
@@ -121,8 +121,8 @@ class UserFixtures extends Fixture
         foreach ($names as $name) {
             $user = new User();
             $password = $this->hasher->hashPassword($user, 'pass_1234');
-            $user->setEmail($name . "@free.fr")
-                ->setPseudo($name . "pseudo")
+            $user->setEmail($name['name'] . "@free.fr")
+                ->setPseudo($name['name'] . "pseudo")
                 ->setPassword($password)
                 ->setActived(true)
                 ->setActiveToken(null)
@@ -130,12 +130,7 @@ class UserFixtures extends Fixture
                 ->setCreatedAt(new DateTimeImmutable());
             $users[] = $user;
             $manager->persist($user);
-
-
-
-            $r = rand(1, 5);
-
-            $this->setReference('user' . $r, $user);
+            $this->setReference($name['user'], $user);
 
             $manager->flush();
         }

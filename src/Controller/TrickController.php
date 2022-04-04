@@ -7,52 +7,60 @@ use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
 use DateTimeImmutable;
+use App\Entity\Comment;
 use App\Form\TrickType;
 use App\Form\VideoType;
+use App\Form\CommentType;
 use App\Form\Type\TaskType;
+use App\Service\ImageUploader;
+use App\Service\VideoValidator;
 use Doctrine\ORM\EntityManager;
+use App\Repository\UserRepository;
 use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
-use App\Repository\UserRepository;
+use App\Repository\CommentRepository;
+use Doctrine\ORM\Query\AST\UpdateItem;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
-use phpDocumentor\Reflection\PseudoTypes\False_;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use phpDocumentor\Reflection\PseudoTypes\False_;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Security\Http\Util\TargetPathTrait;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 
 final class TrickController extends AbstractController
 {
-    // /**
-    //  * @Route("/")
-    //  */
 
-    // public function homepage()
-    // {
-    //     $number = random_int(0, 100);
-    //     return $this->render('Home/index.html.twig', [
-    //         'number' => $number,
-    //     ]);
-    // }
-
+    use TargetPathTrait;
+    public function __construct(private SluggerInterface $slugger,)
+    {
+    }
 
 
     /**
      * @Route("/", name="show_tricks")
+     * @paramConverter(name="trick", Class="MyBundle:Trick")
      */
-    public function showTricks(EntityManagerInterface $entity)
+    public function showTricks(EntityManagerInterface $entity, Request $request, TrickRepository $trickRepo,  $trick = null)
     {
-
         $repo = $entity->getRepository(Trick::class);
         $tricks = $repo->findAll();
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $paginator = $trickRepo->getTrickPaginator($trick, $offset);
+
+
 
         return $this->render('Home/trick.html.twig', [
-            'tricks' => $tricks,
+            'tricks' => $repo->findAll(['createdAt' => 'DESC']),
+            'trick' => $paginator,
+            'loadMore' => $offset - TrickRepository::PAGINATOR_PER_PAGE,
+            'loadLess' => min(count($paginator), $offset + TrickRepository::PAGINATOR_PER_PAGE),
         ]);
     }
 
@@ -61,83 +69,213 @@ final class TrickController extends AbstractController
      *@param string $slug
      */
 
-    public function showOneTrick(TrickRepository $trickRepo, $slug): Response
+    public function showOneTrick(Request $request, ManagerRegistry $doctrine, TrickRepository $trickRepo, $slug, CommentRepository $commentReo): Response
     {
         $trick = $trickRepo->findOneBy(['slug' => $slug]);
 
         if (!$trick) {
             //return $this->redirectToRoute('show_tricks');
-            throw $this->createNotFoundException('Ce trick n\'existe pas !');
+            throw $this->createNotFoundException('Le trick que vous recherchez n\'existe pas !');
+        }
+        $manager = $doctrine->getManager();
+        $comment = new Comment();
+        $form = $this->createForm(CommentType::class, $comment);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment->setTrick($trick)
+                ->setUser($trick->getUser())
+                ->setCreatedAt(new \DateTimeImmutable());
+            $manager->persist($comment);
+            $manager->flush();
+            $this->addFlash('success', 'Votre commentaire a été bien ajouté !');
+            return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
         }
 
+        $comments = $commentReo->findBy(['trick' => $trick->getId()], ['id' => 'DESC']);
+
         return $this->render('Home/showTrick.html.twig', [
-            'trickDetails' => $trick
+            'trickDetails' => $trick,
+            'form' => $form->createView(),
+            'comments' => $comments,
         ]);
     }
 
     /**
-     *@Route("/Creation/Trick", name = "create_trick")
-     * 
+     *@Route("/nouveau/trick", name = "create_trick")
+     *@Route("/modification/trick/{slug}", name = "edit_trick")
+     *@param string $slug
      */
-    public function createTrick(Request $request, ManagerRegistry $doctrine, UserRepository $userRepo): Response
+    public function createTrick(Request $request, ManagerRegistry $doctrine, UserRepository $userRepo, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, $slug = null, TrickRepository $trickRepo): Response
     {
-        $trick = new Trick();
+        if (!$trick) {
+            $trick = new Trick();
+        }
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
 
-        $user = $userRepo->findAll();
 
-        $userId = $user[1];
+        $user = $this->getUser();
+        $updateTrick = $trickRepo->findOneBy(['slug' => $slug]);
+
+        if ($updateTrick && $this->getUser() !== $trick->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+        if (!$trick) {
+            //return $this->redirectToRoute('show_tricks');
+            throw $this->createNotFoundException('Le trick que vous recherchez n\'existe pas !');
+        }
 
         $entityManager = $doctrine->getManager();
 
         $form = $this->createForm(TrickType::class, $trick);
-        //$trick->getVideos()->add($video);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $images = $form->get('image')->getData();
             $videos = $form->get('videos')->getData();
-            //looping for images
-            foreach ($images as $image) {
 
-                $file = md5(uniqid()) . '.' . $image->guessExtension();
-                $image->move($this->getParameter('figure_directory'), $file);
+            $uploader->uploadImage($trick, $images);
 
-                $imageUpload = new Image();
-                $imageUpload->setFilename($file);
-                $imageUpload->setMain(false);
-
-                foreach ($videos as $video) {
-                    $uploadVideo = new video();
-                    $uploadVideo->setTrick($trick);
-
-                    $uploadVideo->setUrl($video->getUrl());
-                    $trick->addImage($imageUpload);
-                }   //$trick->addVideo($uploadVideo);
-                $trick->setUser($userId);
-                $trick->setUpdatedAt(new \DateTimeImmutable());
-                $trick->setCreatedAt(new \DateTimeImmutable());
-                $trick->setSlug($trick->getName());
-
-                $entityManager->persist($trick);
-                $entityManager->persist($uploadVideo);
-                $entityManager->persist($imageUpload);
+            foreach ($videos as $video) {
+                $validUrl->getYoutubeUrl($video, $trick);
+                $video->setTrick($trick);
             }
+            $trick->setUser($user);
+            if ($trick->getId()) {
+                $trick->setUpdatedAt(new \DateTimeImmutable());
+            } else {
+                $trick->setCreatedAt(new \DateTimeImmutable());
+            }
+            $trick->setSlug($this->slugger->slug($trick->getName())->lower());
+
+            $entityManager->persist($trick);
+
             $entityManager->flush();
-            return $this->redirectToRoute('show_tricks');
+
+            if (!$updateTrick && !empty($images) && count($images) > 1) {
+                return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
+            }
+
+            return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
+            $this->addFlash('success', 'Votre Trick a été ajouté !');
         }
+
         return $this->render(
             'Tricks/addTricks.html.twig',
             [
-                'formTrick' => $form->createView()
+                'formTrick' => $form->createView(),
+                'editMode' => $trick->getId() !== null,
+                'trick' => $updateTrick,
             ]
         );
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * @Route("/tricks/choisir-image-main/{slug}", name="image_main")
+     * @param string $slug
+     * 
+     */
+
+    public function imageMain(Request $request, Trick $trick = null,  ManagerRegistry $doctrine, TrickRepository $trickRepo, $slug = null): Response
     {
-        $resolver->setDefaults([
-            'data_class' => Trick::class,
-        ]);
+        $entityManager = $doctrine->getManager();
+        $trick = $trickRepo->findOneBy(['slug' => $slug]);
+        if (!$trick) {
+            $trick = new Trick();
+        }
+        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+        $imageExist = $trick->getImage();
+        foreach ($imageExist as $image) {
+            if ($image->getMain() === true) {
+                return $this->redirectToRoute('show_tricks');
+            }
+        }
+        if ($request->get('imageMain')) {
+            $imageMain = $request->get('imageMain');
+            $images = $entityManager->getRepository(Image::class)->find($imageMain);
+            $images->setMain(true);
+            $entityManager->flush();
+            $this->addFlash('success', 'Votre Trick a été ajouté ainsi que votre image de couverture !');
+
+            return $this->redirectToRoute('show_tricks');
+        } else {
+            $tricks = $trickRepo->findOneBy(['slug' => $slug]);
+        }
+
+
+
+        return $this->render(
+            'Tricks/imageMain.html.twig',
+            [
+                'imageMain' => $tricks->getImage(),
+            ]
+        );
+    }
+
+    #[Route('/delete/trick/{id}', methods: ['POST'], name: 'delete_trick')]
+
+    public function deleteTrick(Request $request, EntityManagerInterface $entityManager, Trick $trick)
+    {
+        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+        if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
+            return $this->redirectToRoute('show_tricks');
+        }
+        $entityManager->remove($trick);
+        $entityManager->flush();
+        $this->addFlash('success', 'Votre Trick a été supprimé !');
+        return $this->redirectToRoute('show_tricks');
+    }
+
+    #[Route('/delete/trick/image/{id}', methods: ['POST'], name: 'delete_image')]
+
+
+    public function deleteImage(EntityManagerInterface $entityManager, int $id, Trick $trick = null,): Response
+    {
+
+        if (!$trick) {
+            $trick = new Trick();
+        }
+        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+        $images = $entityManager->getRepository(Image::class)->find($id);
+
+        $entityManager->remove($images);
+        $entityManager->flush();
+        $this->addFlash('success', 'Votre image a été supprimée !');
+
+        return $this->redirectToRoute('show_tricks');
+    }
+
+
+    #[Route('/delete/trick/video/{id}', methods: ['POST'], name: 'delete_video')]
+
+    public function deleteVideo(EntityManagerInterface $entityManager, int $id, Trick $trick = null,): Response
+    {
+
+        if (!$trick) {
+            $trick = new Trick();
+        }
+        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+        $video = $entityManager->getRepository(Video::class)->find($id);
+
+        $entityManager->remove($video);
+        $entityManager->flush();
+        $this->addFlash('success', 'Votre vodéo a été supprimé !');
+
+        return $this->redirectToRoute('show_tricks');
     }
 }

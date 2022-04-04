@@ -1,14 +1,29 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 {# list #}
-<div class="wrapper" id="tricks">
-    <h2 class="post text-center ">Tricks!</h2>
+<!-- Go to down button -->
+
+
+<a href="{{ path ('show_tricks') }}#trickDown">
+    <button type="button" class="btn btn-danger btn-floating btn-lg btn-down" id="btn-go-to-down">
+        <i class="bi bi-arrow-down-circle-fill"></i>
+    </button></a>
+<!-- Back to top button -->
+<button type="button" class="btn btn-danger btn-floating btn-lg btn-down" id="btn-back-to-top">
+    <i class="bi bi-arrow-up-circle-fill"></i>
+</button>
+{% include "/partials/message-alert.html.twig" %}
+
+<div class="wrapper">
+    <h2 class="post text-center " id="tricks">Tricks!</h2>
     <div class="container">
-        <div class="row g-1">
+        <div class="row justify-content-center pb-0" id="tricksList">
             {% for trick in tricks %}
-
-            <div class="col-md-3">
-
+            {% set isEmpty = trick.image %}
+            {% if isEmpty is empty %}
+            {% include "/partials/trick-default.html.twig" %}
+            {% else %}
+            <div class="trick col-md-3">
                 <div class="card p-3">
                     {% for tricks in trick.image %}
 
@@ -18,28 +33,43 @@
                                 style="height :250px;" src=" {{ asset('images/uploadFigure/' ~ tricks.filename) }}"
                                 width="200"> {% endif %}
 
-                    </div>{% endfor %}
-                    <div class="product-details"><span>{{ trick.name }}</span></a>
-
+                    </div></a>{% endfor %}
+                    <div class="product-details"><a href="{{ path('trick', {'slug': trick.slug })}} ">
+                            <span>{{ trick.name }}</span></a>
+                        {% if app.user == trick.user %}
                         <div class="btn-toolbar justify-content-center " role="toolbar"
                             aria-label="Toolbar with button groups">
                             <div class="btn-group mr-2" role="group" aria-label="First group">
-                                <a href="#"><button type="button" class="btn ">
+                                <a href="{{ path('edit_trick', {'slug': trick.slug })}}"><button type="button"
+                                        class="btn ">
                                         <i class="bi bi-pencil-square icon"></i></button></a>
                             </div>
-                            <div class="btn-group mr-2" role="group" aria-label="Second group">
-                                <a href="#"> <button type="button" class="btn ">
-                                        <i class="bi bi-trash icon"></i></button></a>
-                            </div>
+
+                            <form action="{{ url('delete_trick', {id: trick.id}) }}" method="post"
+                                onsubmit="return confirm('Êtes vous de vouloir supprimer ce trick ?');">
+                                <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
+                                <button type="submit" class="btn">
+                                    <i class="bi bi-trash icon"></i>
+
+                                </button>
+                            </form>
+
                         </div>
+                        {% endif %}
 
                     </div>
-
+                    <div id="trickDown"></div>
                 </div>
             </div>
+            {% endif %}
             {% endfor %}
         </div>
-
+    </div>
+</div>
+<div class="justify-content-center mb-5">
+    <div class="col-md-4 offset-md-4 text-center mt-2" id="loadMoreCol">
+        <button type="button" class="btn btn-primary btn-floating btn-lg  loadMoreBtn" id="loadMoreTricksBtn"><i
+                class="bi bi-plus-circle-fill"></i></button>
     </div>
 </div>
 {% endblock %}

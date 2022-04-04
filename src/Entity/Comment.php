@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CommentRepository;
+use Symfony\Component\Validator\Constraints as Assert;
+
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CommentRepository::class)]
@@ -15,6 +17,12 @@ class Comment
 
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
+
+    /**
+     * @Assert\NotBlank()
+     * @Assert\NotNull()
+     * @Assert\Regex("/[a-zA-Z0-9]+/")
+     */
 
     #[ORM\Column(type: 'text')]
     private $content;
