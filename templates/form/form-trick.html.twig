@@ -4,7 +4,8 @@
 {{ form_row(formTrick.groupe) }}
 <p>Ajouter des images</p>
 {{ form_row(formTrick.image, { 'attr': {'class': 'add_item_link'} }) }}
-
-
 <ul class="video buttonAdd" data-index="{{ formTrick.videos|length > 0 ? formTrick.videos|last.vars.name + 1 : 0 }}"
     data-prototype="{{ form_widget(formTrick.videos.vars.prototype)|e('html_attr') }}"></ul>
+<div class="my-custom-class-for-errors">
+    {{ form_errors(formTrick) }}
+</div>

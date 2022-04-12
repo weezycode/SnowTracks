@@ -19,6 +19,12 @@ class Groupe
 
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+
+    /**
+     * @Assert\EqualTo("Rotations","Grabs","Flips","Old school","One foot","Slides","Rotation désaxé",
+     *  message="Ce groupe n'existe pas !")
+     */
+
     private $name;
 
     #[ORM\OneToMany(mappedBy: 'groupe', targetEntity: Trick::class)]

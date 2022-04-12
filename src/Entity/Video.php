@@ -17,6 +17,14 @@ class Video
 
     #[ORM\Column(type: 'string', length: 255)]
 
+    /**
+     * @Assert\NotBlank()
+     * @Assert\Regex(
+     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{6,}$/",
+     *     message= "Votre url n'est pas correct")
+     *   
+     * 
+     */
     private $url;
 
     #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'videos')]

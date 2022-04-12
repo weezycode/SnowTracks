@@ -114,46 +114,54 @@
     z-index: 2;
     overflow: hidden
 }
+
 .icon {
     font-size: 30px;
 }
-.buttonAdd{
-        margin-left: -33px;
-        
+
+.buttonAdd {
+    margin-left: -33px;
+
 }
-.buttonAdd .add_item_link{
+
+.buttonAdd .add_item_link {
     color: white;
-        background-color: green;
-        border: none;
-        cursor: pointer;
+    background-color: green;
+    border: none;
+    cursor: pointer;
 }
-.buttonAdd li{
+
+.buttonAdd li {
     list-style: none;
 }
 
-.navTrick{
+.navTrick {
     position: relative;
-    bottom: 200px;
+    bottom: 130px;
 }
-.navTrick i{
+
+.navTrick i {
     color: white;
 }
-.dateComment{
+
+.dateComment {
     float: right;
 }
-.log-sign{
+
+.log-sign {
     background-color: #212529;
-    
-      
+
+
 }
-.log-in{
+
+.log-in {
     margin-top: 20px;
 }
 
 .login {
     width: 340px;
     margin: 50px auto;
-  	font-size: 15px;
+    font-size: 15px;
 }
 
 .login form {
@@ -164,96 +172,225 @@
     position: fixed;
     overflow: hidden;
 }
+
 .login h2 {
     margin: 0 0 15px;
 }
+
 .user-dropdown {
     font-size: 15px;
     color: white;
     text-transform: uppercase;
 }
+
 .user-dropdown:hover {
     color: white;
 }
-.group{
+
+.group {
     border: none;
 }
+
 #btn-back-to-top {
-  position: fixed;
-  bottom: 100px;
-  right: 20px;
-  display: none;
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    display: none;
 }
+
 #btn-go-to-down {
-  position: fixed;
-  top: 100px;
-  right: 20px;
-  display: none;
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    display: block;
 }
+
 .imageMain {
     text-align: center;
     margin-top: 20px;
 }
+
 .logout {
     font-size: 40px;
     color: red;
     position: relative;
     right: 20px;
-    
+
 }
+
 .addtrick {
     font-size: 40px;
     color: gray;
     position: relative;
     right: 30px;
 }
-.listTrick{
+
+.listTrick {
     font-size: 40px;
-    color: cornflowerblue ;
+    color: cornflowerblue;
     position: relative;
     right: 50px;
 }
-.log{
+
+.delete {
+    position: relative;
+    left: 300px;
+}
+
+.log {
     font-size: 40px;
     color: green;
-      position: relative;
+    position: relative;
     right: 20px;
 }
+
 .btn-down {
     z-index: 2000;
 }
 
+.avatar {
+    vertical-align: middle;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.mobile {
+    height: 50px;
+
+}
+
+.mobile ul {
+    margin-right: 65px;
+}
+
+.remove-video {
+    position: relative;
+    left: 60%;
+}
+
+.updatePass {
+    margin-top: 20px;
+}
+
+.media {
+    display: none;
+}
+
+.addComent {
+    margin-bottom: 100px;
+}
+
+
+
+
 
 @media (max-width: 992px) {
- .user-dropdown {
-    color: black;
+    .user-dropdown {
+        color: black;
+    }
+
+    .user-dropdown:hover {
+        color: black;
+    }
+
+    .addTrick,
+    .remove-video,
+    .add-video {
+        font-size: 12px;
+    }
+
+    .remove-video {
+        position: relative;
+        left: 55%;
+    }
+
+    .delete {
+        position: relative;
+        left: 10px;
+    }
+
+    .logout {
+        font-size: 40px;
+        color: red;
+        position: relative;
+        right: 20px;
+
+    }
+
+    .addtrick {
+        font-size: 40px;
+        color: gray;
+        position: relative;
+        right: 30px;
+    }
+
+    .listTrick {
+        font-size: 40px;
+        color: cornflowerblue;
+        position: relative;
+        right: 50px;
+    }
+
+    .log {
+        font-size: 40px;
+        color: green;
+        position: relative;
+        right: 20px;
+    }
+
+    .media {
+        display: block;
+        position: relative;
+        left: 30%;
+
+    }
+
+    .wrapper {
+        display: none;
+    }
+
+    .navTrick {
+        position: relative;
+        bottom: 70px;
+        z-index: 2000;
+    }
+
+    .add-comment {
+        font-size: 15px;
+    }
+
+    .post-preview {
+        margin-left: 4px;
+    }
+
+    .register {
+        margin-right: 55px;
+    }
+
+    .forgetPass {
+        margin-right: 15px;
+    }
+
+    .newPass {
+        margin-right: 35px;
+    }
+
+    .masthead {
+        background-size: contain !important;
+        height: 400px !important;
+        width: 100% !important;
+    }
+
+    .site-heading {
+        margin-top: 50px;
+    }
+
+    .site-heading h1 {
+        font-size: 2rem !important;
+    }
+
+    .add-update-trick {
+        margin-top: 8rem !important;
+    }
 }
-.user-dropdown:hover {
-    color: black;
-}
-.logout {
-    font-size: 40px;
-    color: red;
-    position: relative;
-    right: 20px;
-    
-}
-.addtrick {
-    font-size: 40px;
-    color: gray;
-    position: relative;
-    right: 30px;
-}
-.listTrick{
-    font-size: 40px;
-    color: cornflowerblue ;
-    position: relative;
-    right: 50px;
-}
-.log{
-    font-size: 40px;
-    color: green;
-      position: relative;
-    right: 20px;
-}
-  }

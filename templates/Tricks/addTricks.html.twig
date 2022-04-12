@@ -1,4 +1,4 @@
-{% extends "head.html.twig" %}
+{% extends "/Tricks/base.html.twig" %}
 {% block body %}
 {% if editMode %}
 {% set isEmpty = trick.image %}
@@ -9,15 +9,12 @@
 {% for imageMain in trick.image %}
 {% if imageMain.main == 1 %}
 
-<header class="masthead " style="background-image: url('{{ asset('images/uploadFigure/' ~ imageMain.filename) }}' )">
+<header class="masthead img-fluid"
+    style="background-image: url('{{ asset('images/uploadFigure/' ~ imageMain.filename) }}' ); height:755px;">
     {% endif %}
     {% endfor %}
 
     <ul class="nav justify-content-end navTrick">
-        <li class="nav-item">
-            <a href="#"><button type="button" class="btn ">
-                    <i class="bi bi-pencil-square icon"></i></a>
-        </li>
         <li class="nav-item">
             <form
                 action="{% for imageMain in trick.image %} {% if imageMain.main == 1 %}  {{ url('delete_image', {id: imageMain.id  }) }}  {% endif %} {% endfor %}"
@@ -40,6 +37,7 @@
     </div>
 </header>
 {% endif %}
+<button type="button" class="btn btn-primary media">Voir les médias</button>
 <div class="wrapper" id="tricks">
     <h1 class="fw-bolder mb-1 text-center">{{ trick.name }}</h1>
     <div class="container-sm">
@@ -55,10 +53,6 @@
                     </div>
                     <div class="btn-toolbar justify-content-center " role="toolbar"
                         aria-label="Toolbar with button groups">
-                        <div class="btn-group mr-2" role="group" aria-label="First group">
-                            <a href="#"><button type="button" class="btn ">
-                                    <i class="bi bi-pencil-square icon"></i></button></a>
-                        </div>
                         <form action="{{ url('delete_image', {id: image.id}) }}" method="post"
                             onsubmit="return confirm('Êtes vous de vouloir supprimer cette image ?');">
                             <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
@@ -84,10 +78,6 @@
 
                     <div class="btn-toolbar justify-content-center " role="toolbar"
                         aria-label="Toolbar with button groups">
-                        <div class="btn-group mr-2" role="group" aria-label="First group">
-                            <a href="#"><button type="button" class="btn ">
-                                    <i class="bi bi-pencil-square icon"></i></button></a>
-                        </div>
                         <form action="{{ url('delete_video', {id: video.id}) }}" method="post"
                             onsubmit="return confirm('Êtes vous de vouloir supprimer cet vidéo ?');">
                             <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
@@ -108,7 +98,7 @@
     <div class="container px-4 px-lg-5">
         <div class="row gx-4 gx-lg-5 justify-content-center">
             <div class="col-md-10 col-lg-8 col-xl-7">
-                <div class="my-5">
+                <div class="my-5 add-update-trick">
                     {% if editMode %}
                     <h3 class="text-center" id="contact">Modifier le Trick</h3>
                     {% else %}
@@ -118,13 +108,24 @@
                     {{ include('/form/form-trick.html.twig') }}
 
                     {{ form_rest(formTrick) }}
-                    {% if not editMode %}
-                    <button type="submit" class="btn btn-success addTrick">Publier le Trick</button>
-                    {% else %}
-                    <button type="submit" class="btn btn-success addTrick">Modifier le Trick</button>
-                    {% endif %}
-                    {{ form_end(formTrick) }}
+                    <div class="btn-group" role="group" aria-label="Basic example">
+                        {% if not editMode %}
+                        <button type="submit" class="btn btn-success addTrick">Publier</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-success addTrick">Modifier</button>
 
+
+
+                        {{ form_end(formTrick) }}
+                        <form action="{{ url('delete_trick', {id: trick.id}) }}" method="post"
+                            onsubmit="return confirm('Êtes vous de vouloir supprimer ce trick ?');">
+                            <input type="hidden" name="token" value="{{ csrf_token('delete') }}" />
+                            <div class="delete">
+                                <button type="submit" class="btn btn-danger addTrick">Supprimer</button>
+                            </div>
+                        </form>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

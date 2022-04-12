@@ -15,7 +15,7 @@ import $ from 'jquery';
 
 
 
-let $addVideoLink = $('<a href="#" class="add_item_link btn btn-primary">Add a url</a>');
+let $addVideoLink = $('<button type="submit" class="add_item_link add-video btn btn-primary">Ajouter un url</button>');
 let $newLinkLi = $('<li></li>').append($addVideoLink);
 
 $(document).ready(function () {
@@ -56,7 +56,7 @@ $(document).ready(function () {
         let $newFormLi = $('<li></li>').append(newForm);
 
         // also add a remove button, just for this example
-        $newFormLi.append('<a href="#" class="remove-video btn btn-danger">Delete URL</a>');
+        $newFormLi.append('<button type="button" class="remove-video btn btn-danger">Supprimer un url</button>');
 
         $newLinkLi.before($newFormLi);
 
@@ -71,10 +71,10 @@ $(document).ready(function () {
     }
 
     /* ****** LoadMore Tricks buttons ***** */
-    let tricksPerPage = 10;
+    let tricksPerPage = 15;
     let tricks = $(".trick");
 
-    if (tricksPerPage < 10) {
+    if (tricksPerPage < 15) {
         $(".scroll").hide();
     }
 
@@ -130,6 +130,7 @@ $(document).ready(function () {
         document.documentElement.scrollTop = 0;
     }
 
+
     document.addEventListener("DOMContentLoaded", function (_event) {
 
 
@@ -161,6 +162,27 @@ $("body").on("submit", "form", function () {
         return false;
     });
     return true;
+});
+
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+})
+
+//Show media
+
+$(".media").click(function () {
+
+    var lable = $(".media").text().trim();
+    if (lable == "Voir les médias") {
+        $(".media").text("Masquer les médias");
+        $(".wrapper").show();
+    }
+    else {
+        $(".media").text("Voir les médias");
+        $(".wrapper").hide();
+    }
+
 });
 
 
