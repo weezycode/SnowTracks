@@ -58,7 +58,10 @@ class Trick
     #[ORM\JoinColumn(nullable: false)]
     private $user;
 
+
     #[ORM\OneToMany(mappedBy: "trick", targetEntity: Video::class, cascade: ["persist", "remove"])]
+
+
     private $videos;
 
     #[ORM\OneToMany(mappedBy: "trick", targetEntity: Image::class,  cascade: ["persist", "remove"])]

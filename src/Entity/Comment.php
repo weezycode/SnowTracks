@@ -19,9 +19,13 @@ class Comment
     private $createdAt;
 
     /**
+     * @Assert\Length(min="10",minMessage="Le contenu doit faire au minimum 10 caractères")
      * @Assert\NotBlank()
      * @Assert\NotNull()
-     * @Assert\Regex("/[a-zA-Z0-9]+/")
+     * @Assert\Regex(
+     *     pattern="/[a-zA-Z0-9._\p{L}-]{1,20}/",
+     *     message="Vérifier votre contenu"
+     * )
      */
 
     #[ORM\Column(type: 'text')]

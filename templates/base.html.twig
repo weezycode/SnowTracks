@@ -31,9 +31,16 @@
                     href="{{path('show_tricks')}}#tricks"><i class="bi bi-view-list listTrick"></i></a>
             </li>
             {% if app.user %}
-            <li class="nav-item addtrick"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('create_trick')}}"><i
+            {% if app.user.actived == false %}
+            <li class="nav-item addtrick"><a class="nav-link px-lg-3 py-3 py-lg-4" href="javascript:void(0)"
+                    data-bs-toggle="popover" title="Bonjour,{{ app.user.pseudo }}"
+                    data-bs-content="Vous n'avez pas encore valider votre email', validez le pour profiter des services !"><i
                         class="bi bi-plus-square-fill addtrick"></i></a></li>
 
+            {% elseif app.user.actived == true %}
+            <li class="nav-item addtrick"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('create_trick')}}"><i
+                        class="bi bi-plus-square-fill addtrick"></i></a></li>
+            {% endif %}
             <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('security_logout')}}"><i
                         class="bi bi-box-arrow-left logout"></i></a>
 
@@ -69,9 +76,18 @@
                             <li><a class="dropdown-item" href="index.php?action=deleteMe">Supprimer mon compte</a></li>
                         </ul>
                     </div>
+                    {% if app.user.actived == false %}
+                    <li class="nav-item"><a href="javascript:void(0)" class="nav-link px-lg-3 py-3 py-lg-4"
+                            data-bs-toggle="popover" title="Bonjour,{{ app.user.pseudo }}"
+                            data-bs-content="Vous n'avez pas encore valider votre email', validez le pour profiter des services !">
+                            Ajouter
+                            un Trick</a></li>
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('new_token')}}">Demander
+                            un token</a></li>
+                    {% elseif app.user.actived == true %}
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
                             href="{{path('create_trick')}}">Ajouter
-                            un Trick</a></li>
+                            un Trick</a></li> {% endif %}
 
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
                             href="{{path('security_logout')}}">Déconnexion</a>
@@ -88,7 +104,8 @@
         </div>
     </nav>
     <!-- Header-->
-    <header class="masthead" style="background-image: url('{{asset('/images/female-snowboarder.jpg')}}' )">
+    <header class="masthead img-fluid center-block"
+        style="background-image: url('{{asset('/images/female-snowboarder.jpg')}}' ); height:755px; ">
 
         <div class="container position-relative px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
@@ -101,6 +118,7 @@
         </div>
     </header>
     {% block body %} {% endblock %}
+
 
     {# list end #}
     <!-- Footer-->

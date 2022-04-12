@@ -21,12 +21,14 @@ class TrickType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name', TextType::class, ['label' => 'Le nom du Trick', 'required' => false])
-            ->add('content', TextareaType::class, ['label' => 'Description', 'required' => false])
+            ->add('name', TextType::class, ['label' => 'Le nom du Trick', 'required' => true])
+            ->add('content', TextareaType::class, ['label' => 'Description', 'required' => true])
             ->add('groupe', EntityType::class, [
                 'class' => Groupe::class,
                 'choice_label' => 'name',
-                'required' => false,
+                'attr' => ['readonly' => true],
+                'required' => true,
+                'empty_data' => false,
                 'label' => 'Selectionner un groupe'
             ])
 
@@ -42,6 +44,7 @@ class TrickType extends AbstractType
                 'entry_options' => ['label' => false],
                 'allow_add' => true,
                 'required' => false,
+                'prototype' => true,
                 'label' => false,
 
             ]);

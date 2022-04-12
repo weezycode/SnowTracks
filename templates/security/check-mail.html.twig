@@ -1,0 +1,28 @@
+{% extends "Tricks/head.html.twig" %}
+{% block body %}
+<div class="container">
+    <div class="row d-flex justify-content-center">
+        {% include "/partials/message-alert.html.twig" %}
+        <div class="col-md-4">
+            <div class="login forgetPass">
+                {{ form_start(form) }}
+                <h2 class="text-center">Mot de passe oublié </h2>
+                <label for="form">Entrez votre adresse email</label>
+                {{ form_widget(form, {'label' : 'Email', 'attr' : {'placeholder' : 'Adresse email'}}) }}
+                {# <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}"> #}
+                <div class="form-group text-center log-in">
+                    <button type="submit" class="button btn-primary btn-block">Envoyer</button>
+                </div>
+                <div class="clearfix">
+                    <p class="text-center">Retounez à l'accueil
+                        <a href="{{path('show_tricks')}}">Home</a>
+                    </p>
+                </div>
+                {{ form_end(form) }}
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}

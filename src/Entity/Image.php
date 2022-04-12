@@ -17,7 +17,8 @@ class Image
 
     /**
      * @Assert\NotBlank()
-     * @Assert\File(mimeTypes={ "image/jpeg" , "image/png" })
+     * @Assert\File(mimeTypes={ "image/jpeg" , "image/png" }
+     * mimeTypesMessage = "Veuillez insérer une image type jpeg ou png avec une taille maximun de 4M")
      */
     #[ORM\Column(type: 'string', length: 255, unique: true)]
     private $filename;

@@ -38,7 +38,7 @@ final class TrickController extends AbstractController
 {
 
     use TargetPathTrait;
-    public function __construct(private SluggerInterface $slugger,)
+    public function __construct(private SluggerInterface $slugger)
     {
     }
 
@@ -47,20 +47,30 @@ final class TrickController extends AbstractController
      * @Route("/", name="show_tricks")
      * @paramConverter(name="trick", Class="MyBundle:Trick")
      */
-    public function showTricks(EntityManagerInterface $entity, Request $request, TrickRepository $trickRepo,  $trick = null)
+    public function showTricks(EntityManagerInterface $entity, ManagerRegistry $doctrine,  Trick $trick = null)
     {
-        $repo = $entity->getRepository(Trick::class);
-        $tricks = $repo->findAll();
-        $offset = max(0, $request->query->getInt('offset', 0));
-        $paginator = $trickRepo->getTrickPaginator($trick, $offset);
 
+        $repo = $entity->getRepository(Trick::class);
+
+
+        $manager = $doctrine->getManager();
+
+        $tricks = $repo->findAll();
+        foreach ($tricks as $trick) {
+
+            $image = $trick->getImage();
+        }
+        foreach ($image as $imageMain) {
+        }
+        if (count($image) > 0 && $imageMain->getMain() === false) {
+            $main = $image[0];
+            $main->setMain(true);
+            $manager->flush();
+        }
 
 
         return $this->render('Home/trick.html.twig', [
             'tricks' => $repo->findAll(['createdAt' => 'DESC']),
-            'trick' => $paginator,
-            'loadMore' => $offset - TrickRepository::PAGINATOR_PER_PAGE,
-            'loadLess' => min(count($paginator), $offset + TrickRepository::PAGINATOR_PER_PAGE),
         ]);
     }
 
@@ -77,13 +87,16 @@ final class TrickController extends AbstractController
             //return $this->redirectToRoute('show_tricks');
             throw $this->createNotFoundException('Le trick que vous recherchez n\'existe pas !');
         }
+
+        $user = $this->getUser();
+
         $manager = $doctrine->getManager();
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $comment->setTrick($trick)
-                ->setUser($trick->getUser())
+                ->setUser($user)
                 ->setCreatedAt(new \DateTimeImmutable());
             $manager->persist($comment);
             $manager->flush();
@@ -110,7 +123,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser()) {
+        if (!$this->getUser() || $this->getUser()->getActived() === false) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -118,9 +131,7 @@ final class TrickController extends AbstractController
         $user = $this->getUser();
         $updateTrick = $trickRepo->findOneBy(['slug' => $slug]);
 
-        if ($updateTrick && $this->getUser() !== $trick->getUser()) {
-            return $this->redirectToRoute('show_tricks');
-        }
+
 
         if (!$trick) {
             //return $this->redirectToRoute('show_tricks');
@@ -137,9 +148,11 @@ final class TrickController extends AbstractController
             $images = $form->get('image')->getData();
             $videos = $form->get('videos')->getData();
 
-            $uploader->uploadImage($trick, $images);
+            //get le groupe pour renvoyer une erreur  
 
+            $uploader->uploadImage($trick, $images);
             foreach ($videos as $video) {
+
                 $validUrl->getYoutubeUrl($video, $trick);
                 $video->setTrick($trick);
             }
@@ -155,9 +168,11 @@ final class TrickController extends AbstractController
 
             $entityManager->flush();
 
-            if (!$updateTrick && !empty($images) && count($images) > 1) {
+            if (!empty($images) && count($images) > 1) {
                 return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
             }
+
+
 
             return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
             $this->addFlash('success', 'Votre Trick a été ajouté !');
@@ -186,7 +201,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+        if (!$this->getUser() || $this->getUser()->getActived() === false) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -196,16 +211,28 @@ final class TrickController extends AbstractController
                 return $this->redirectToRoute('show_tricks');
             }
         }
+
+
         if ($request->get('imageMain')) {
             $imageMain = $request->get('imageMain');
+
             $images = $entityManager->getRepository(Image::class)->find($imageMain);
+
             $images->setMain(true);
             $entityManager->flush();
+
+
             $this->addFlash('success', 'Votre Trick a été ajouté ainsi que votre image de couverture !');
 
             return $this->redirectToRoute('show_tricks');
-        } else {
-            $tricks = $trickRepo->findOneBy(['slug' => $slug]);
+        }
+
+        //$imageMain = $entityManager->getRepository(Image::class)->findOneBy(['id_trick' => $trick->getId()]);
+
+
+        $tricks = $trickRepo->findOneBy(['slug' => $slug]);
+        if (!$trick) {
+            return $this->redirectToRoute('show_tricks');
         }
 
 
@@ -222,7 +249,7 @@ final class TrickController extends AbstractController
 
     public function deleteTrick(Request $request, EntityManagerInterface $entityManager, Trick $trick)
     {
-        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+        if (!$this->getUser() || $this->getUser()->getActived() === false) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -244,7 +271,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+        if (!$this->getUser() || $this->getUser()->getActived() === false) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -266,7 +293,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() && $this->getUser() !== $trick->getUser()) {
+        if (!$this->getUser() || $this->getUser()->getActived() === false) {
             return $this->redirectToRoute('show_tricks');
         }
 

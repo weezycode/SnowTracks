@@ -80,14 +80,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public $password_confirmed;
 
 
-
-    #[ORM\Column(type: 'string', length: 255)]
+    /**
+     * 
+     * @Assert\File(mimeTypes={ "image/jpeg" , "image/png" },
+     * mimeTypesMessage = "Veuillez insérer une image type jpeg ou png")
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $avatar;
 
     #[ORM\Column(type: 'boolean')]
     private $actived;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     private $activeToken;
 
     #[ORM\Column(type: 'datetime_immutable')]
@@ -98,6 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Trick::class, orphanRemoval: true)]
     private $tricks;
+
 
     public function __construct()
     {

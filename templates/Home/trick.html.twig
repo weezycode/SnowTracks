@@ -12,9 +12,11 @@
 <button type="button" class="btn btn-danger btn-floating btn-lg btn-down" id="btn-back-to-top">
     <i class="bi bi-arrow-up-circle-fill"></i>
 </button>
+{% include "/partials/noActived-message.html.twig" %}
+
 {% include "/partials/message-alert.html.twig" %}
 
-<div class="wrapper">
+<div class="">
     <h2 class="post text-center " id="tricks">Tricks!</h2>
     <div class="container">
         <div class="row justify-content-center pb-0" id="tricksList">
@@ -35,8 +37,9 @@
 
                     </div></a>{% endfor %}
                     <div class="product-details"><a href="{{ path('trick', {'slug': trick.slug })}} ">
-                            <span>{{ trick.name }}</span></a>
-                        {% if app.user == trick.user %}
+                            <span> {{ trick.name }} </span></a>
+                        {% if app.user %}
+                        {% if app.user.actived == true %}
                         <div class="btn-toolbar justify-content-center " role="toolbar"
                             aria-label="Toolbar with button groups">
                             <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -56,9 +59,9 @@
 
                         </div>
                         {% endif %}
+                        {% endif %}
 
                     </div>
-                    <div id="trickDown"></div>
                 </div>
             </div>
             {% endif %}
@@ -72,4 +75,5 @@
                 class="bi bi-plus-circle-fill"></i></button>
     </div>
 </div>
+<div id="trickDown"></div>
 {% endblock %}
