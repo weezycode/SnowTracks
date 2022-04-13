@@ -259,7 +259,11 @@ class Trick
         return $this->slug;
     }
 
-    public function setSlug(string $slug): self
+    /**
+     * @param string $slug
+     */
+
+    public function setSlug($slug): self
     {
         $this->slug = $slug;
 

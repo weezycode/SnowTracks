@@ -40,8 +40,10 @@ final class TrickController extends AbstractController
 {
 
     use TargetPathTrait;
-    public function __construct(private SluggerInterface $slugger)
+    private $slugger;
+    public function __construct(SluggerInterface $slugger)
     {
+        $this->slugger = $slugger;
     }
 
 
@@ -121,7 +123,6 @@ final class TrickController extends AbstractController
 
     /**
      *@Route("/nouveau/trick", name = "create_trick")
-     *@Route("/modification/trick/{slug}", name = "edit_trick")
      *@param string $slug
      */
     public function createTrick(Request $request, ManagerRegistry $doctrine, UserRepository $userRepo, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, $slug = null, TrickRepository $trickRepo): Response
@@ -135,9 +136,64 @@ final class TrickController extends AbstractController
 
 
         $user = $this->getUser();
+
+        $entityManager = $doctrine->getManager();
+
+        $form = $this->createForm(TrickType::class, $trick);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $images = $form->get('image')->getData();
+            $videos = $form->get('videos')->getData();
+
+            $uploader->uploadImage($trick, $images);
+            foreach ($videos as $video) {
+
+                $validUrl->getYoutubeUrl($video, $trick);
+                $video->setTrick($trick);
+            }
+            $trick->setUser($user);
+            $trick->setCreatedAt(new \DateTimeImmutable());
+            $trick->setSlug($this->slugger->slug($trick->getName())->lower());
+            $entityManager->persist($trick);
+
+            $entityManager->flush();
+
+            if (!empty($images) && count($images) > 1) {
+                return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
+            }
+
+
+            return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
+            $this->addFlash('success', 'Votre Trick a été ajouté !');
+        }
+
+        return $this->render(
+            'Tricks/addTricks.html.twig',
+            [
+                'formTrick' => $form->createView(),
+                'editMode' => $trick->getId() !== null,
+            ]
+        );
+    }
+
+    /**
+     *@Route("/modification/trick/{slug}", name = "edit_trick")
+     *@param string $slug
+     */
+    public function updateTrick(Request $request, ManagerRegistry $doctrine, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, string $slug = null, TrickRepository $trickRepo): Response
+    {
+
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
+
+        $user = $this->getUser();
         $updateTrick = $trickRepo->findOneBy(['slug' => $slug]);
 
-        if (!$trick) {
+        if (!$updateTrick) {
             //return $this->redirectToRoute('show_tricks');
             throw $this->createNotFoundException('Le trick que vous recherchez n\'existe pas !');
         }
@@ -161,25 +217,13 @@ final class TrickController extends AbstractController
                 $video->setTrick($trick);
             }
             $trick->setUser($user);
-            if ($trick->getId()) {
-                $trick->setUpdatedAt(new \DateTimeImmutable());
-            } else {
-                $trick->setCreatedAt(new \DateTimeImmutable());
-            }
+            $trick->setUpdatedAt(new \DateTimeImmutable());
             $trick->setSlug($this->slugger->slug($trick->getName())->lower());
-
-            $entityManager->persist($trick);
+            //$entityManager->persist($trick);
 
             $entityManager->flush();
-
-            if (!empty($images) && count($images) > 1) {
-                return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
-            }
-
-
-
+            $this->addFlash('success', 'Votre Trick a été modifié !');
             return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
-            $this->addFlash('success', 'Votre Trick a été ajouté !');
         }
 
         return $this->render(
