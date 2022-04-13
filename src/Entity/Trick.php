@@ -28,7 +28,7 @@ class Trick
      * @Assert\NotNull()
      * @Assert\Regex(
      *     pattern="/[a-zA-Z._\p{L}-]{1,20}/",
-     *     message="Not valid name: Veuillez juste mettre des lettres"
+     *     message=" Veuillez juste mettre des lettres"
      * )
      */
 

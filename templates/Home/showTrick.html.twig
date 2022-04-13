@@ -62,7 +62,6 @@
                             src="{{ asset('images/uploadFigure/' ~ image.filename) }}" width="200">
                     </div>
                     {% if app.user %}
-                    {% if app.user.actived == true %}
                     {# <div class="btn-toolbar justify-content-center " role="toolbar"
                         aria-label="Toolbar with button groups">
                         <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -79,7 +78,6 @@
                         </form>
                     </div> #}
                     {% endif %}
-                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -92,7 +90,6 @@
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen></iframe>
                     {% if app.user %}
-                    {% if app.user.actived == true %}
                     {# <div class="btn-toolbar justify-content-center " role="toolbar"
                         aria-label="Toolbar with button groups">
                         <div class="btn-group mr-2" role="group" aria-label="First group">
@@ -109,7 +106,6 @@
                             </button>
                         </form>
                     </div> #}
-                    {% endif %}
                     {% endif %}
                 </div>
             </div>
@@ -143,7 +139,7 @@
     <div class="row d-flex justify-content-center">
         <div class="col-md-8">
             <div class="headings d-flex justify-content-between align-items-center mb-3">
-                {% if comments %}
+                {% if comments |length > 0 %}
                 <h5>Les commentaires</h5>
             </div>
             {% for comment in comments %}
@@ -164,38 +160,35 @@
                 </div>
             </div>
             {% endfor %}
-
-            <div class="bg-light p-2">
-                {% else %}
-                <h4>Aucun commentaires</h4>
+            {% if previous >= 0 %}
+            <a href="{{ path('trick', { slug: trickDetails.slug, offset: previous }) }}">Previous</a>
+            {% endif %}
+            {% if next < comments|length %} <a href="{{ path('trick', { slug: trickDetails.slug, offset: next }) }}">
+                Next</a>
                 {% endif %}
-            </div>
-            {% if app.user %}
-            {% if app.user.actived == false %}
-            <a href="javascript:void(0)" class="nav-link px-lg-3 py-3 py-lg-4" data-bs-toggle="popover"
-                title="Bonjour,{{ app.user.pseudo }}"
-                data-bs-content="Vous n'avez pas encore valider votre email', validez le pour profiter des services !"><button
-                    class=" text-center btn btn-primary btn-sm shadow-none commentConnect " type="button">Ajouter un
-                    commentaire</button>
-            </a>
-            {% elseif app.user.actived == true %}
-            <div class="card p-3 mt-2">
-                <h4 class="add-comment"> Publier un commentaire </h4>
-                {{ form_start(form)}}
-                {{ form_row(form.content)}}
-                {{ form_rest(form)}}
-                <button type="submit" class="btn btn-success addTrick addComent">Commenter</button>
+                <div class="bg-lightp-2">
+                    {% else %}
+                    <h4>Aucun commentaire</h4>
+                    {% endif %}
+                </div>
+                {% if app.user %}
+                <div class="card p-3 mt-2">
+                    <h4 class="add-comment"> Publier un commentaire </h4>
+                    {{ form_start(form)}}
+                    {{ form_row(form.content)}}
+                    {{ form_rest(form)}}
+                    <button type="submit" class="btn btn-success addTrick addComent">Commenter</button>
 
-                {{ form_end(form)}}
-                {% endif %}
-                {% else %}
-                <a class="" href="{{path ('security_login',  {'redirect_to': app.request.pathInfo})}}"><button
-                        class=" text-center btn btn-primary btn-sm shadow-none commentConnect " type="button">Connectez
-                        vous pour ajouter un commentaire</button>
-                </a>
+                    {{ form_end(form)}}
+                    {% else %}
+                    <a class="" href="{{path ('security_login',  {'redirect_to': app.request.pathInfo})}}"><button
+                            class=" text-center btn btn-primary btn-sm shadow-none commentConnect "
+                            type="button">Connectez
+                            vous pour ajouter un commentaire</button>
+                    </a>
 
-                {% endif %}
-            </div>
+                    {% endif %}
+                </div>
         </div>
     </div>
 </div>
