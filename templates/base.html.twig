@@ -31,16 +31,9 @@
                     href="{{path('show_tricks')}}#tricks"><i class="bi bi-view-list listTrick"></i></a>
             </li>
             {% if app.user %}
-            {% if app.user.actived == false %}
-            <li class="nav-item addtrick"><a class="nav-link px-lg-3 py-3 py-lg-4" href="javascript:void(0)"
-                    data-bs-toggle="popover" title="Bonjour,{{ app.user.pseudo }}"
-                    data-bs-content="Vous n'avez pas encore valider votre email', validez le pour profiter des services !"><i
-                        class="bi bi-plus-square-fill addtrick"></i></a></li>
-
-            {% elseif app.user.actived == true %}
             <li class="nav-item addtrick"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('create_trick')}}"><i
                         class="bi bi-plus-square-fill addtrick"></i></a></li>
-            {% endif %}
+
             <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('security_logout')}}"><i
                         class="bi bi-box-arrow-left logout"></i></a>
 
@@ -76,27 +69,19 @@
                             <li><a class="dropdown-item" href="index.php?action=deleteMe">Supprimer mon compte</a></li>
                         </ul>
                     </div>
-                    {% if app.user.actived == false %}
-                    <li class="nav-item"><a href="javascript:void(0)" class="nav-link px-lg-3 py-3 py-lg-4"
-                            data-bs-toggle="popover" title="Bonjour,{{ app.user.pseudo }}"
-                            data-bs-content="Vous n'avez pas encore valider votre email', validez le pour profiter des services !">
-                            Ajouter
-                            un Trick</a></li>
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('new_token')}}">Demander
-                            un token</a></li>
-                    {% elseif app.user.actived == true %}
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
                             href="{{path('create_trick')}}">Ajouter
-                            un Trick</a></li> {% endif %}
+                            un Trick</a></li>
 
                     <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
                             href="{{path('security_logout')}}">Déconnexion</a>
                     </li>
                     {% else %}
-                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('security_login')}}">Se
+                    <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
+                            href="{{path('security_login')}}#connexion">Se
                             connecter</a></li>
                     <li class=" nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4"
-                            href="{{path('security_register')}}">S'inscrire</a></li>
+                            href="{{path('security_register')}}#inscription">S'inscrire</a></li>
                     {% endif %}
 
                 </ul>

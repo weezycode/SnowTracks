@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -33,6 +35,10 @@ class SecurityController extends AbstractController
      */
     public function register(Request $request, ManagerRegistry $manager, UserPasswordHasherInterface $passwordHasher, Token $token, MailRegister $sendMail): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+
         $entityManager = $manager->getManager();
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
@@ -198,24 +204,5 @@ class SecurityController extends AbstractController
             ]
 
         );
-    }
-
-
-    /**
-     * @Route("/nouveau-token", name ="new_token")
-     */
-    public function newToken(ManagerRegistry $manager, Token $token, MailRegister $sendMail): Response
-    {
-        $entityManager = $manager->getManager();
-        if (!$this->getUser()->getActived() === false) {
-            return $this->redirectToRoute('show_tricks');
-        }
-        $user = $this->getUser();
-        $user->setActiveToken($token->genToken());
-        $entityManager->flush();
-        $sendMail->sendToken($user);
-        $this->addFlash('success', 'Veuillez valider votre compte en cliquant sur le lien qui vous a été envoyé par email !');
-
-        return $this->redirectToRoute('show_tricks');
     }
 }

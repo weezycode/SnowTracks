@@ -31,9 +31,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Assert\NotNull()
      * @Assert\Length(min="5", max="50",minMessage="Le pseudo doit faire au minimum 5 caractères",maxMessage="Le pseudo ne doit pas faire plus de 50 caractères")
      * @Assert\Regex(
-     *     pattern="/^[ÀÁÂÃÄÅàáâãäåÒÓÔÕÖØòóôõöøÈÉÊËèéêëÇçÌÍÎÏìíîïÙÚÛÜùúûüÿÑña-zA-Z0-9_]{0,10}$/",
-     *     match=true,
-     *     message="Ce pseudo n\est pas valide"
+     *     pattern="/[a-zA-Z0-9._\p{L}-]{1,20}/",
+     *     message="Ce pseudo n'est pas valide"
      * )
      */
 
@@ -43,13 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Assert\Email(
-     *     message = "L\'adresse email '{{ value }}' n\'est pas valide."
-     * )
-     * @Assert\Regex(
-     *     pattern="/^[a-zA-Z-0-9_.-]+@[a-zA-Z-]+\.[a-zA-Z-.]+$/",
-     * 
-     *     match=true,
-     *     message=" Votre email n'est pas valide "
+     *     message = "L\'adresse email '{{ value }}' n'est pas valide."
      * )
      * @Assert\NotBlank()
      */
@@ -62,22 +55,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Assert\NotBlank()
-     * @Assert\Regex(
-     *     pattern="/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).{6,}$/",
-     *     message="Votre mot de passe doit contenir au moins une lettre miniscule, une majucsule, un chiffre et un caractère espécial"
-     * )
-     * @Assert\Length(min="5", max="20",minMessage= "Votre mot de passe doit avoir au moins 6 caractères", maxMessage= "Votre mot de passe ne doit avoir au plus de 20 caractères")
-     * 
-     * @Assert\EqualTo(propertyPath ="password_confirmed", message="Votre mot de passe doit être identique")
      */
 
     #[ORM\Column(type: 'string')]
     private $password;
-    /**
-     *@Assert\EqualTo(propertyPath ="password", message="Votre mot de passe doit être identique")
-     */
 
-    public $password_confirmed;
 
 
     /**
@@ -91,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $actived;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $activeToken;
 
     #[ORM\Column(type: 'datetime_immutable')]

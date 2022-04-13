@@ -1,17 +1,16 @@
-{% extends "Tricks/head.html.twig" %}
+{% extends "base.html.twig" %}
 {% block body %}
 <div class="container">
     <div class="row d-flex justify-content-center">
         <div class="col-md-6">
-            <div class="login register">
+            <div class="inscription" id="inscription">
                 <div class="post-preview signup">
                     {{ form_start(form) }}
                     <h2 class="text-center">Inscription</h2>
                     {{ form_row(form.pseudo, {'label' : 'Pseudo', 'attr' : {'placeholder' : 'Votre Pseudo'}}) }}
                     {{ form_row(form.email, {'label' : 'Email', 'attr' : {'placeholder' : 'Adresse email'}}) }}
-                    {{ form_row(form.password, {'label' : 'Mot de passe', 'attr' : {'placeholder' : 'Mot de passe'}}) }}
-                    {{ form_row(form.password_confirmed, {'label' : 'Confirmez le Mot de passe', 'attr' : {'placeholder'
-                    : 'Confirmation du mot de passe'}}) }}
+                    {{ form_row(form.password.first) }}
+                    {{ form_row(form.password.second) }}
                     {{ form_row(form.avatar,{'label' : 'Télécharger votre avatar'}) }}
                     {{ form_rest(form) }}
 
@@ -20,7 +19,7 @@
                     </div>
                     <div class="clearfix">
                         <p class="text-center">Vous êtes déjà inscrit ?
-                            <a href="{{path('security_login')}}">Connectez-vous</a>
+                            <a href="{{path('security_login')}}#connexion">Connectez-vous</a>
                         </p>
                     </div>
                     <div class="clearfix">

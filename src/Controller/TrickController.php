@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\User;
@@ -52,7 +54,6 @@ final class TrickController extends AbstractController
 
         $repo = $entity->getRepository(Trick::class);
 
-
         $manager = $doctrine->getManager();
 
         $tricks = $repo->findAll();
@@ -79,7 +80,7 @@ final class TrickController extends AbstractController
      *@param string $slug
      */
 
-    public function showOneTrick(Request $request, ManagerRegistry $doctrine, TrickRepository $trickRepo, $slug, CommentRepository $commentReo): Response
+    public function showOneTrick(Request $request, ManagerRegistry $doctrine, TrickRepository $trickRepo, $slug, CommentRepository $commentRepo): Response
     {
         $trick = $trickRepo->findOneBy(['slug' => $slug]);
 
@@ -103,13 +104,18 @@ final class TrickController extends AbstractController
             $this->addFlash('success', 'Votre commentaire a été bien ajouté !');
             return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
         }
+        $offset = max(0, $request->query->getInt('offset', 0));
+        $paginator = $commentRepo->getCommentPaginator($trick, $offset);
 
-        $comments = $commentReo->findBy(['trick' => $trick->getId()], ['id' => 'DESC']);
+        $comments = $commentRepo->findBy(['trick' => $trick->getId()], ['id' => 'DESC']);
 
         return $this->render('Home/showTrick.html.twig', [
             'trickDetails' => $trick,
             'form' => $form->createView(),
             'comments' => $comments,
+            'comments' => $paginator,
+            'previous' => $offset - CommentRepository::PAGINATOR_PER_PAGE,
+            'next' => min(count($paginator), $offset + CommentRepository::PAGINATOR_PER_PAGE),
         ]);
     }
 
@@ -123,15 +129,13 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() || $this->getUser()->getActived() === false) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
 
         $user = $this->getUser();
         $updateTrick = $trickRepo->findOneBy(['slug' => $slug]);
-
-
 
         if (!$trick) {
             //return $this->redirectToRoute('show_tricks');
@@ -249,7 +253,7 @@ final class TrickController extends AbstractController
 
     public function deleteTrick(Request $request, EntityManagerInterface $entityManager, Trick $trick)
     {
-        if (!$this->getUser() || $this->getUser()->getActived() === false) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -271,7 +275,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() || $this->getUser()->getActived() === false) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -293,7 +297,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() || $this->getUser()->getActived() === false) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
