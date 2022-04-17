@@ -67,7 +67,8 @@
                     <button class="btn user-dropdown btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">Bonjour,{{ app.user.pseudo }}</button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="index.php?action=deleteMe">Supprimer mon compte</a></li>
+                        <li><a class="dropdown-item" href="{{ url('delete_user', {id: app.user.id}) }}">Supprimer mon
+                                compte <input type="hidden" name="token" value="{{ csrf_token('delete') }}" /></a></li>
                     </ul>
                 </div>
                 <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="{{path('create_trick')}}">Ajouter

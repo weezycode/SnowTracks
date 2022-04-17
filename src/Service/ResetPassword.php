@@ -26,7 +26,7 @@ class ResetPassword extends AbstractController
             ->To($user->getEmail())
             ->htmlTemplate('email/reset-password.html.twig')
             ->context([
-                'token' => $user->getActiveToken(),
+                'token' => $user->getForgetPassToken(),
                 'pseudo' => $user->getPseudo(),
             ]);
 
