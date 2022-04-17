@@ -7,11 +7,14 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\Token;
 use App\Service\SendMail;
+use App\Form\LoginFormType;
 use App\Service\MailRegister;
 use App\Form\RegistrationType;
+use App\Service\ImageUploader;
 use App\Service\ResetPassword;
 use App\Form\PasswordResetType;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,28 +36,32 @@ class SecurityController extends AbstractController
     /**
      * @Route("/inscription", name ="security_register")
      */
-    public function register(Request $request, ManagerRegistry $manager, UserPasswordHasherInterface $passwordHasher, Token $token, MailRegister $sendMail): Response
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher, Token $token, MailRegister $sendMail, UserRepository $userRepo, ImageUploader $uploader): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
-        $entityManager = $manager->getManager();
         $user = new User();
         $form = $this->createForm(RegistrationType::class, $user);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->get('avatar')->getData();
+            if ($image) {
+                $imageName = $uploader->uploadAvatar($image);
+                $user->setAvatar($imageName);
+            }
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $user->getPassword()
             );
 
+
             $user->setPassword($hashedPassword)
                 ->setActived(false)
                 ->setActiveToken($token->genToken())
                 ->setCreatedAt(new \DateTimeImmutable());
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $userRepo->add($user);
             $sendMail->sendToken($user);
             $this->addFlash('success', 'Votre inscription a été bien prise en compte, veuillez valider votre compte en cliquant sur le lien qui vous a été envoyé par email !');
 
@@ -76,10 +83,10 @@ class SecurityController extends AbstractController
         if ($this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
-
         $this->saveTargetPath($request->getSession(), 'main', $this->generateUrl('show_tricks'));
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
+
 
         return $this->render(
             'security/login.html.twig',
@@ -104,10 +111,9 @@ class SecurityController extends AbstractController
      * @param string $token 
      * @param UserRepository $userRepository
      */
-    public function isActived(UserRepository $userRepository, string $token, ManagerRegistry $manager): Response
+    public function isActived(UserRepository $userRepository, string $token): Response
     {
         $user = $userRepository->findOneBy(['activeToken' => $token]);
-        $entityManager = $manager->getManager();
         if (!$user) {
 
             $this->addFlash('error', 'Ce token n\'est pas valide !');
@@ -123,8 +129,9 @@ class SecurityController extends AbstractController
 
         $user->setActived(true)
             ->setActiveToken(null);
-        $entityManager->persist($user);
-        $entityManager->flush();
+        $userRepository->add($user);
+        // $entityManager->persist($user);
+        // $entityManager->flush();
         $this->addFlash('sucess', ' Félicitaion votre compte est actif, vous pouvez vous connecter et profiter des services !');
         return $this->redirectToRoute('show_tricks');
     }
@@ -134,9 +141,9 @@ class SecurityController extends AbstractController
      * @param UserRepository $userRepository
      */
 
-    public function resetPassword(Request $request, UserRepository $userRepository, Token $token, ResetPassword $sendMail, ManagerRegistry $manager): Response
+    public function resetPassword(Request $request, UserRepository $userRepository, Token $token, ResetPassword $sendMail): Response
     {
-        $entityManager = $manager->getManager();
+
         $form = $this->createForm(EmailType::class);
         $form->handleRequest($request);
 
@@ -146,8 +153,9 @@ class SecurityController extends AbstractController
             if (!$user) {
                 $this->addFlash('error', ' Cet adresse email n\'existe pas !');
             } else {
-                $user->setActiveToken($token->genToken());
-                $entityManager->flush();
+                $user->setForgetPassToken($token->genToken());
+                $userRepository->add($user);
+                // $entityManager->flush();
                 $sendMail->sendTokenPassword($user);
                 $this->addFlash('success', ' Un email vous a été envoyé pour renitialiser votre mot de passe !');
                 return $this->redirectToRoute('show_tricks');
@@ -170,10 +178,9 @@ class SecurityController extends AbstractController
      * @param string $token 
      * @param UserRepository $userRepository
      */
-    public function newPassword(Request $request, UserRepository $userRepository, string $token, ManagerRegistry $manager, UserPasswordHasherInterface $passwordHasher): Response
+    public function newPassword(Request $request, UserRepository $userRepository, string $token, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $user = $userRepository->findOneBy(['activeToken' => $token]);
-        $entityManager = $manager->getManager();
+        $user = $userRepository->findOneBy(['forgetPassToken' => $token]);
         $form = $this->createForm(PasswordResetType::class);
         $form->handleRequest($request);
         if (!$user) {
@@ -181,7 +188,7 @@ class SecurityController extends AbstractController
             $this->addFlash('error', 'Ce token n\'est pas valide !');
             return $this->redirectToRoute('show_tricks');
         }
-        if ($user->getActiveToken() !== $token) {
+        if ($user->getForgetPassToken() !== $token) {
 
             $this->addFlash('error', 'Ce token n\'est plus valide !');
             return $this->redirectToRoute('show_tricks');
@@ -190,8 +197,8 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
-            $user->setActiveToken(null);
-            $entityManager->flush();
+            $user->setForgetPassToken(null);
+            $userRepository->add($user);
 
             $this->addFlash('sucess', ' Votre mot de passe a été modifié, vous pouvez vous connectez !');
             return $this->redirectToRoute('show_tricks');
@@ -204,5 +211,24 @@ class SecurityController extends AbstractController
             ]
 
         );
+    }
+
+    /**
+     * @Route("/delete/{id}", name ="delete_user")
+     */
+
+    public function deleteUser(ImageUploader $remover, User $users, UserRepository $userRepo): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('show_tricks');
+        }
+        if ($users->getAvatar() !== null) {
+            $remover->removeImage($users->getAvatar());
+        }
+        $userRepo->remove($users);
+        $session = new Session();
+        $session->invalidate();
+        return $this->redirectToRoute('security_logout');
+        $this->addFlash('success', 'Votre compte a été supprimé !');
     }
 }

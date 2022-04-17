@@ -10,6 +10,7 @@ use App\Entity\Video;
 use App\Entity\Groupe;
 use DateTimeImmutable;
 use App\Entity\Comment;
+use App\Service\ImageUploader;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\HttpFoundation\File\File;
@@ -126,7 +127,7 @@ class UserFixtures extends Fixture
                 ->setPassword($password)
                 ->setActived(true)
                 ->setActiveToken(null)
-                ->setAvatar("https://picsum.photos/20" . rand(1, 10))
+                ->setAvatar("MOUDOU-Logo.png")
                 ->setCreatedAt(new DateTimeImmutable());
             $users[] = $user;
             $manager->persist($user);

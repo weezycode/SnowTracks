@@ -281,6 +281,25 @@
     margin-bottom: 100px;
 }
 
+.commentConnect {
+    margin-bottom: 50px;
+}
+
+.navSecurity {
+    background-color: #212529 !important;
+}
+
+.arrow-row {
+    text-align: center !important;
+}
+
+.arrow {
+    font-size: 40px;
+}
+
+.text-center {
+    text-align: center !important;
+}
 
 
 
@@ -353,7 +372,7 @@
     .navTrick {
         position: relative;
         bottom: 70px;
-        z-index: 2000;
+        z-index: 2;
     }
 
     .add-comment {
@@ -377,14 +396,11 @@
     }
 
     .masthead {
-        background-size: contain !important;
         height: 400px !important;
         width: 100% !important;
     }
 
-    .site-heading {
-        margin-top: 50px;
-    }
+
 
     .site-heading h1 {
         font-size: 2rem !important;
@@ -392,5 +408,54 @@
 
     .add-update-trick {
         margin-top: 8rem !important;
+    }
+
+    .navSecurity {
+        background-color: #6c757d !important;
+
+    }
+
+    .navSecurity a,
+    .btn {
+
+        color: white !important;
+    }
+
+    .navSecurity button {
+
+        color: white !important;
+    }
+
+
+    .home button {
+
+        color: #000000 !important;
+        font-size: 14px;
+        margin-left: -10px;
+
+    }
+
+    .group .user-add {
+        font-size: 14px;
+        margin-left: -10px;
+    }
+
+    .showTricks button {
+
+        color: #000000 !important;
+
+
+    }
+
+    .dropdown-menu a {
+        color: #000000 !important;
+    }
+
+    .center-block {
+        background-color: unset !important;
+    }
+
+    .heading {
+        margin-top: 35px;
     }
 }

@@ -1,4 +1,4 @@
-{% extends "/Tricks/base.html.twig" %}
+{% extends "base-add.html.twig" %}
 {% block body %}
 {% if editMode %}
 {% set isEmpty = trick.image %}
@@ -9,7 +9,7 @@
 {% for imageMain in trick.image %}
 {% if imageMain.main == 1 %}
 
-<header class="masthead img-fluid"
+<header class="masthead img-fluid center-block"
     style="background-image: url('{{ asset('images/uploadFigure/' ~ imageMain.filename) }}' ); height:755px;">
     {% endif %}
     {% endfor %}

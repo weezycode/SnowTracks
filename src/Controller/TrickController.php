@@ -51,12 +51,10 @@ final class TrickController extends AbstractController
      * @Route("/", name="show_tricks")
      * @paramConverter(name="trick", Class="MyBundle:Trick")
      */
-    public function showTricks(EntityManagerInterface $entity, ManagerRegistry $doctrine,  Trick $trick = null)
+    public function showTricks(EntityManagerInterface $entity, Trick $trick = null, ImageRepository $imageRepo)
     {
 
         $repo = $entity->getRepository(Trick::class);
-
-        $manager = $doctrine->getManager();
 
         $tricks = $repo->findAll();
         foreach ($tricks as $trick) {
@@ -68,7 +66,7 @@ final class TrickController extends AbstractController
         if (count($image) > 0 && $imageMain->getMain() === false) {
             $main = $image[0];
             $main->setMain(true);
-            $manager->flush();
+            $imageRepo->add($main);
         }
 
 
@@ -82,7 +80,7 @@ final class TrickController extends AbstractController
      *@param string $slug
      */
 
-    public function showOneTrick(Request $request, ManagerRegistry $doctrine, TrickRepository $trickRepo, $slug, CommentRepository $commentRepo): Response
+    public function showOneTrick(Request $request, TrickRepository $trickRepo, $slug, CommentRepository $commentRepo): Response
     {
         $trick = $trickRepo->findOneBy(['slug' => $slug]);
 
@@ -93,7 +91,6 @@ final class TrickController extends AbstractController
 
         $user = $this->getUser();
 
-        $manager = $doctrine->getManager();
         $comment = new Comment();
         $form = $this->createForm(CommentType::class, $comment);
         $form->handleRequest($request);
@@ -101,8 +98,9 @@ final class TrickController extends AbstractController
             $comment->setTrick($trick)
                 ->setUser($user)
                 ->setCreatedAt(new \DateTimeImmutable());
-            $manager->persist($comment);
-            $manager->flush();
+            $commentRepo->add($comment);
+            // $manager->persist($comment);
+            // $manager->flush();
             $this->addFlash('success', 'Votre commentaire a été bien ajouté !');
             return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
         }
@@ -123,9 +121,9 @@ final class TrickController extends AbstractController
 
     /**
      *@Route("/nouveau/trick", name = "create_trick")
-     *@param string $slug
+     *
      */
-    public function createTrick(Request $request, ManagerRegistry $doctrine, UserRepository $userRepo, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, $slug = null, TrickRepository $trickRepo): Response
+    public function createTrick(Request $request, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, TrickRepository $trickRepo): Response
     {
         if (!$trick) {
             $trick = new Trick();
@@ -136,8 +134,6 @@ final class TrickController extends AbstractController
 
 
         $user = $this->getUser();
-
-        $entityManager = $doctrine->getManager();
 
         $form = $this->createForm(TrickType::class, $trick);
 
@@ -156,9 +152,7 @@ final class TrickController extends AbstractController
             $trick->setUser($user);
             $trick->setCreatedAt(new \DateTimeImmutable());
             $trick->setSlug($this->slugger->slug($trick->getName())->lower());
-            $entityManager->persist($trick);
-
-            $entityManager->flush();
+            $trickRepo->add($trick);
 
             if (!empty($images) && count($images) > 1) {
                 return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
@@ -182,7 +176,7 @@ final class TrickController extends AbstractController
      *@Route("/modification/trick/{slug}", name = "edit_trick")
      *@param string $slug
      */
-    public function updateTrick(Request $request, ManagerRegistry $doctrine, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, string $slug = null, TrickRepository $trickRepo): Response
+    public function updateTrick(Request $request, ImageUploader $uploader, VideoValidator $validUrl, Trick $trick = null, string $slug = null, TrickRepository $trickRepo): Response
     {
 
         if (!$this->getUser()) {
@@ -194,11 +188,8 @@ final class TrickController extends AbstractController
         $updateTrick = $trickRepo->findOneBy(['slug' => $slug]);
 
         if (!$updateTrick) {
-            //return $this->redirectToRoute('show_tricks');
             throw $this->createNotFoundException('Le trick que vous recherchez n\'existe pas !');
         }
-
-        $entityManager = $doctrine->getManager();
 
         $form = $this->createForm(TrickType::class, $trick);
 
@@ -208,7 +199,6 @@ final class TrickController extends AbstractController
             $images = $form->get('image')->getData();
             $videos = $form->get('videos')->getData();
 
-            //get le groupe pour renvoyer une erreur  
 
             $uploader->uploadImage($trick, $images);
             foreach ($videos as $video) {
@@ -219,9 +209,10 @@ final class TrickController extends AbstractController
             $trick->setUser($user);
             $trick->setUpdatedAt(new \DateTimeImmutable());
             $trick->setSlug($this->slugger->slug($trick->getName())->lower());
-            //$entityManager->persist($trick);
-
-            $entityManager->flush();
+            $trickRepo->add($trick);
+            if (!empty($images) && count($images) > 1) {
+                return $this->redirectToRoute('image_main', ['slug' => $trick->getSlug()]);
+            }
             $this->addFlash('success', 'Votre Trick a été modifié !');
             return $this->redirectToRoute('trick', ['slug' => $trick->getSlug()]);
         }
@@ -249,7 +240,7 @@ final class TrickController extends AbstractController
         if (!$trick) {
             $trick = new Trick();
         }
-        if (!$this->getUser() || $this->getUser()->getActived() === false) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
 
@@ -263,10 +254,12 @@ final class TrickController extends AbstractController
 
         if ($request->get('imageMain')) {
             $imageMain = $request->get('imageMain');
-
             $images = $entityManager->getRepository(Image::class)->find($imageMain);
+            foreach ($images as $image) {
 
-            $images->setMain(true);
+                $image->setMain(true);
+            }
+
             $entityManager->flush();
 
 
@@ -274,9 +267,6 @@ final class TrickController extends AbstractController
 
             return $this->redirectToRoute('show_tricks');
         }
-
-        //$imageMain = $entityManager->getRepository(Image::class)->findOneBy(['id_trick' => $trick->getId()]);
-
 
         $tricks = $trickRepo->findOneBy(['slug' => $slug]);
         if (!$trick) {
@@ -295,7 +285,7 @@ final class TrickController extends AbstractController
 
     #[Route('/delete/trick/{id}', methods: ['POST'], name: 'delete_trick')]
 
-    public function deleteTrick(Request $request, EntityManagerInterface $entityManager, Trick $trick)
+    public function deleteTrick(Request $request, EntityManagerInterface $entityManager, Trick $trick, ImageUploader $remover)
     {
         if (!$this->getUser()) {
             return $this->redirectToRoute('show_tricks');
@@ -303,6 +293,11 @@ final class TrickController extends AbstractController
 
         if (!$this->isCsrfTokenValid('delete', $request->request->get('token'))) {
             return $this->redirectToRoute('show_tricks');
+        }
+        $images = $trick->getImage();
+        foreach ($images as $image) {
+
+            $remover->removeImage($image->getFilename());
         }
         $entityManager->remove($trick);
         $entityManager->flush();
@@ -313,7 +308,7 @@ final class TrickController extends AbstractController
     #[Route('/delete/trick/image/{id}', methods: ['POST'], name: 'delete_image')]
 
 
-    public function deleteImage(EntityManagerInterface $entityManager, int $id, Trick $trick = null,): Response
+    public function deleteImage(EntityManagerInterface $entityManager, ImageUploader $remover, int $id, Trick $trick = null,): Response
     {
 
         if (!$trick) {
@@ -324,6 +319,7 @@ final class TrickController extends AbstractController
         }
 
         $images = $entityManager->getRepository(Image::class)->find($id);
+        $remover->removeImage($images->getFilename());
 
         $entityManager->remove($images);
         $entityManager->flush();

@@ -79,11 +79,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Comment::class, orphanRemoval: true, cascade: ["persist", "remove"])]
     private $comments;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Trick::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Trick::class, orphanRemoval: true, cascade: ["persist", "remove"])]
     private $tricks;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $forgetPassToken;
+
+
 
 
     public function __construct()
@@ -279,6 +284,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $trick->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getForgetPassToken(): ?string
+    {
+        return $this->forgetPassToken;
+    }
+
+    public function setForgetPassToken(?string $forgetPassToken): self
+    {
+        $this->forgetPassToken = $forgetPassToken;
 
         return $this;
     }
