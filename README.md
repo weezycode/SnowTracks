@@ -40,9 +40,13 @@ Now launch a server
 Or
 
       php bin/console server:run
-If you want to login use one of the credentials in UserFixtures.
+If you want to login use one of the credentials in UserFixtures. 
 
-<email>awa@free.fr<email>
+Email
+
+    awa@free.fr
+Password 
+
+    pass_1234
    
-
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9aa560c308764b34b5bcba84f86170d6)](https://www.codacy.com/gh/weezycode/SnowTricks/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=weezycode/SnowTricks&amp;utm_campaign=Badge_Grade)
