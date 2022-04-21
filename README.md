@@ -23,13 +23,13 @@
 
       cd SnowTricks
 
-*Now update the project*
+*Now install the project*
 
       composer install
       
-*After the update, launch the datasets*
+*After the installation, launch the datasets*
 
-      symfony console d:f:l  
+      symfony console doctrine:fixtures:load  
 *Or if you don't have the Symfony CLIENT*    
    
       php bin/console doctrine:fixtures:load
