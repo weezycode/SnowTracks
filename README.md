@@ -29,10 +29,13 @@
 
       composer install
 *Create the database and update the .ENV file for the database connection* 
-<h2 align="ref">
+<h2 align="red">
 Warning
-</h2>
+
+ <p>
 *if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*    
+  <p>
+</h2>
 
 *Migrate the tables in your database*
 
