@@ -1,5 +1,5 @@
 <h1 align="center">
-  # *SnowTricks*
+ SnowTricks
 </h1>
 
 *The objective of this project is to create a collaborative snowboarding website to promote this sport to the general public and the learning of tricks.*
