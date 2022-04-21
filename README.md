@@ -9,6 +9,6 @@ To do this project I need to create the following pages:
     -the page register;
     -the page forgetPassword;
     -the page new password; 
-[] git clone https://github.com/weezycode/SnowTricks.git
+[github] (git clone https://github.com/weezycode/SnowTricks.git)
 To install the project, open your terminal, copy the link and paste it in your development path or anywhere.
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9aa560c308764b34b5bcba84f86170d6)](https://www.codacy.com/gh/weezycode/SnowTricks/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=weezycode/SnowTricks&amp;utm_campaign=Badge_Grade)
