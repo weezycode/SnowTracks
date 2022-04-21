@@ -39,7 +39,7 @@
 *Now launch a server* 
 
       symfony serve       
-*Or
+*Or*
 
       php bin/console server:run
  *And it's over, just stay to go*   https://localhost:8000/     
