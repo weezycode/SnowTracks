@@ -4,14 +4,14 @@ The objective of this project is to create a collaborative snowboarding website 
 
 To do this project I need to create the following pages:
 
-   *the home page where the list of figures will appear;
-   *the page for creating a new figure;
-   *the edit page of a figure;
-   *the presentation page of a figure (containing the common discussion space around a figure);
-   *the page login; 
-   *the page register;
-   *the page forgetPassword;
-   *the page new password; 
+   * the home page where the list of figures will appear;
+   * the page for creating a new figure;
+   * the edit page of a figure;
+   * the presentation page of a figure (containing the common discussion space around a figure);
+   * the page login; 
+   * the page register;
+   * the page forgetPassword;
+   * the page new password; 
 
 To install the project, open your terminal, copy the link and paste it in your development path or anywhere
 
