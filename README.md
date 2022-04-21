@@ -42,7 +42,7 @@
 *Or*
 
       php bin/console server:run
- *And it's over, just stay to go*   https://localhost:8000/     
+ *And it's over, go in =>  https://localhost:8000/*   
 
 
 *If you want to login use one of the credentials in UserFixtures.* 
