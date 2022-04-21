@@ -32,7 +32,7 @@
 
 *Warning if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*    
 
-*Update the tables in your database*
+*Migrate the tables in your database*
 
       symfony console doctrine:migrations:migrate
 *Now launch the datasets*
