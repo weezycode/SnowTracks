@@ -26,20 +26,25 @@
 *Now install the project*
 
       composer install
-      
-*After the installation, launch the datasets*
+*Create the database and update the .ENV file for the database connection* 
+
+*Warning if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*    
+
+*Update the tables in your database*
+
+      symfony console doctrine:migrations:migrate
+*Now launch the datasets*
 
       symfony console doctrine:fixtures:load  
-*Or if you don't have the Symfony CLIENT*    
-   
-      php bin/console doctrine:fixtures:load
-
 *Now launch a server* 
 
       symfony serve       
 *Or
 
       php bin/console server:run
+ *And it's over, just stay to go*   https://localhost:8000/     
+
+
 *If you want to login use one of the credentials in UserFixtures.* 
 
 *Email*
