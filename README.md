@@ -13,6 +13,7 @@ To do this project I need to create the following pages:
    * the page forgetPassword;
    * the page new password; 
 
+Before installing the project make sure you have PHP8 ^ and composer.
 To install the project, open your terminal, copy the link and paste it in your development path or anywhere
 
       git clone https://github.com/weezycode/SnowTricks.git
