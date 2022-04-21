@@ -1,4 +1,4 @@
-# SnowTricks
+#SnowTricks
 The objective of this project is to create a collaborative snowboarding website to promote this sport to the general public and the learning of tricks.
 To do this project I need to create the following pages:
     -the home page where the list of figures will appear;
