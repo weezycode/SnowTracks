@@ -29,7 +29,7 @@
 
       composer install
 *Create the database and update the .ENV file for the database connection* 
-<div class="text-white bg-red mb-2">
+<div class="text-red">
 Warning 
 </div>
 *if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*    
