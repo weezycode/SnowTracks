@@ -31,9 +31,8 @@
 *Create the database and update the .ENV file for the database connection* 
 
 
-<h3 style="color:red !important;">
-:warning:  if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"
-</h3>
+## :warning:  *if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*
+
 
 *Make migrate the tables in your database*
 
