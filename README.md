@@ -29,15 +29,13 @@
 
       composer install
 *Create the database and update the .ENV file for the database connection* 
-<h3 align="text-red">
-Warning
 
- <p>
-if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"    
-  <p>
+
+<h3 style="color:red !important;">
+:warning:  if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"
 </h3>
 
-*Migrate the tables in your database*
+*Make migrate the tables in your database*
 
       symfony console doctrine:migrations:migrate
 *Now launch the datasets*
