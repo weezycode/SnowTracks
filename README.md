@@ -29,13 +29,13 @@
 
       composer install
 *Create the database and update the .ENV file for the database connection* 
-<h2 align="red">
+<h3 align="text-red">
 Warning
 
  <p>
-*if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"*    
+if you don't have the Symfony CLIENT use  "php bin/console" instead "symfony console"    
   <p>
-</h2>
+</h3>
 
 *Migrate the tables in your database*
 
@@ -63,3 +63,9 @@ Warning
 *Enjoy* 😃
    
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/9aa560c308764b34b5bcba84f86170d6)](https://www.codacy.com/gh/weezycode/SnowTricks/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=weezycode/SnowTricks&amp;utm_campaign=Badge_Grade)
+
+
+<style>
+H3{color:Red !important;}
+p{color:White !important;}
+</style>
