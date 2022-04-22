@@ -6,27 +6,21 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\Token;
-use App\Service\SendMail;
-use App\Form\LoginFormType;
 use App\Service\MailRegister;
 use App\Form\RegistrationType;
 use App\Service\ImageUploader;
 use App\Service\ResetPassword;
 use App\Form\PasswordResetType;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
 
 
 class SecurityController extends AbstractController
@@ -83,7 +77,6 @@ class SecurityController extends AbstractController
         if ($this->getUser()) {
             return $this->redirectToRoute('show_tricks');
         }
-        $this->saveTargetPath($request->getSession(), 'main', $this->generateUrl('show_tricks'));
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 

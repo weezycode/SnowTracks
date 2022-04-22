@@ -42,7 +42,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @Assert\Email(
-     *     message = "L\'adresse email '{{ value }}' n'est pas valide."
+     *     message = "L'adresse email '{{ value }}' n'est pas valide."
      * )
      * @Assert\NotBlank()
      */
