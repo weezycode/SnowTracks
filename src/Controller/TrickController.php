@@ -4,35 +4,24 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\User;
 use App\Entity\Image;
 use App\Entity\Trick;
 use App\Entity\Video;
-use DateTimeImmutable;
 use App\Entity\Comment;
 use App\Form\TrickType;
-use App\Form\VideoType;
 use App\Form\CommentType;
-use App\Form\Type\TaskType;
 use App\Service\ImageUploader;
 use App\Service\VideoValidator;
-use Doctrine\ORM\EntityManager;
-use App\Repository\UserRepository;
 use App\Repository\ImageRepository;
 use App\Repository\TrickRepository;
 use App\Repository\CommentRepository;
-use Doctrine\ORM\Query\AST\UpdateItem;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Routing\Annotation\Route;
-use phpDocumentor\Reflection\PseudoTypes\False_;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 

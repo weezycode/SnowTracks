@@ -57,8 +57,6 @@ class TrickFixtures extends Fixture
 
         ];
         foreach ($titles as $title) {
-            $groupe = new Groupe();
-            // dump($this->getReference($title['groupe']));
 
             $trick = (new Trick())
                 ->setName($title['name'])

@@ -15,7 +15,7 @@ import $ from 'jquery';
 
 
 
-let $addVideoLink = $('<button type="submit" class="add_item_link add-video btn btn-primary">Ajouter un url</button>');
+let $addVideoLink = $('<button type="submit" class="add_item_link add-video btn btn-primary">Ajouter une vidéo</button>');
 let $newLinkLi = $('<li></li>').append($addVideoLink);
 
 $(document).ready(function () {
@@ -56,7 +56,7 @@ $(document).ready(function () {
         let $newFormLi = $('<li></li>').append(newForm);
 
         // also add a remove button, just for this example
-        $newFormLi.append('<button type="button" class="remove-video btn btn-danger">Supprimer un url</button>');
+        $newFormLi.append('<button type="button" class="remove-video btn btn-danger">Supprimer la vidéo</button>');
 
         $newLinkLi.before($newFormLi);
 

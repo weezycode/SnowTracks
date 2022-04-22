@@ -22,7 +22,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserFixtures extends Fixture
 {
     private  $hasher;
-    private $img;
 
     public function __construct(UserPasswordHasherInterface $hasher, private SluggerInterface $slugger)
     {
